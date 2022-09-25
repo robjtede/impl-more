@@ -10,6 +10,14 @@ impl_more::impl_deref_mut!(Foo);
 impl_more::impl_from!(Foo, String);
 impl_more::impl_into!(Foo, String);
 
+#[derive(Debug)]
+enum FooEnum {
+    Bar,
+    Qux,
+}
+
+impl_more::impl_display_enum!(FooEnum, Bar => "bar", Qux => "qux");
+
 fn main() {
     let mut foo = Foo("bar".to_owned());
 
@@ -26,4 +34,7 @@ fn main() {
 
     let foo = Foo("bar".to_owned());
     let _foo_str: String = foo.into();
+
+    assert_eq!(FooEnum::Bar.to_string(), "bar");
+    assert_eq!(FooEnum::Qux.to_string(), "qux");
 }
