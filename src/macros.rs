@@ -169,6 +169,25 @@ macro_rules! impl_into {
     };
 }
 
+#[macro_export]
+macro_rules! impl_display_enum {
+    ($ty:ty, $($variant:ident => $stringified:literal),+) => {
+        impl ::std::fmt::Display for $ty {
+            fn fmt(&self, fmt: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                fmt.write_str(match self {
+                    $(
+                        Self::$variant => $stringified,
+                    )*
+                })
+            }
+        }
+    };
+
+    ($ty:ty, $($variant:ident => $stringified:literal),+,) => {
+        impl_display_enum!($ty, $($variant => $stringified),+)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #![allow(clippy::from_over_into)]
@@ -195,4 +214,26 @@ mod tests {
         From<String>,
         Into<String>,
     );
+
+    #[test]
+    fn impl_display() {
+        #[derive(Debug)]
+        enum Foo {
+            Bar,
+            Qux,
+        }
+
+        impl_display_enum!(Foo, Bar => "bar", Qux => "qux");
+
+        assert_eq!(Foo::Bar.to_string(), "bar");
+        assert_eq!(Foo::Qux.to_string(), "qux");
+
+        #[derive(Debug)]
+        enum FooComma {
+            Bar,
+            Qux,
+        }
+
+        impl_display_enum!(FooComma, Bar => "bar", Qux => "qux",);
+    }
 }
