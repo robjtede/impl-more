@@ -1,6 +1,6 @@
 # `impl-more`
 
-> Concise trait implementation.
+> Concise trait implementations.
 
 # Usage
 

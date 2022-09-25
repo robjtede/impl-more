@@ -1,6 +1,6 @@
 [package]
 name = "impl-more"
-version = "0.1.0"
+version = "0.0.1"
 description = "Concise trait implementations"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 license = "MIT OR Apache-2.0"
@@ -10,5 +10,4 @@ rust-version = "1.56"
 [dependencies]
 
 [dev-dependencies]
-# derive_more = "0.99.8"
 static_assertions = "1.1"
