@@ -169,6 +169,24 @@ macro_rules! impl_into {
     };
 }
 
+/// Implement [`Display`] for enums using a static string for each variant.
+///
+/// # Examples
+/// ```
+/// use impl_more::impl_display_enum;
+///
+/// enum Foo {
+///     Bar,
+///     Qux,
+/// }
+///
+/// impl_display_enum!(Foo, Bar => "bar", Qux => "qux");
+///
+/// assert_eq!(Foo::Bar.to_string(), "bar");
+/// assert_eq!(Foo::Qux.to_string(), "qux");
+/// ```
+///
+/// [`Display`]: std::fmt::Display
 #[macro_export]
 macro_rules! impl_display_enum {
     ($ty:ty, $($variant:ident => $stringified:literal),+) => {
@@ -228,6 +246,7 @@ mod tests {
         assert_eq!(Foo::Bar.to_string(), "bar");
         assert_eq!(Foo::Qux.to_string(), "qux");
 
+        #[allow(dead_code)]
         #[derive(Debug)]
         enum FooComma {
             Bar,
