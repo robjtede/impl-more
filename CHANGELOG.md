@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+
+## 0.0.2 - 2022-09-25
+
 - Add basic `impl_display!` macro for enums.
 - Add `impl_from!` and `impl_into!` macros.
 
