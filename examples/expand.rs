@@ -1,10 +1,7 @@
 #![allow(dead_code)]
 
-enum FooContents3 {
-    Bar(u64, u64),
-    Qux { msg: &'static str },
-}
+struct Foo2(String);
 
-// impl_more::impl_display_enum!(FooContents3, Bar (x, y) => "x: {x}; y: {y}", Qux { msg } => "{msg}");
+impl_more::forward_deref_and_mut!(Foo2, ref str);
 
 fn main() {}
