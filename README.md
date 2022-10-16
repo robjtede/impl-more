@@ -2,6 +2,14 @@
 
 > Concise trait implementations.
 
+[![crates.io](https://img.shields.io/crates/v/impl-more?label=latest)](https://crates.io/crates/impl-more)
+[![Documentation](https://docs.rs/impl-more/badge.svg)](https://docs.rs/impl-more/0.0.3)
+![MIT or Apache 2.0 licensed](https://img.shields.io/crates/l/impl-more.svg)
+<br />
+[![dependency status](https://deps.rs/crate/impl-more/0.0.3/status.svg)](https://deps.rs/crate/impl-more/0.0.3)
+[![Download](https://img.shields.io/crates/d/impl-more.svg)](https://crates.io/crates/impl-more)
+[![CircleCI](https://circleci.com/gh/robjtede/impl-more/tree/main.svg?style=shield)](https://circleci.com/gh/robjtede/impl-more/tree/main)
+
 # Usage
 
 ```rust
@@ -12,6 +20,8 @@ impl_more::impl_as_mut!(MyNewTypeStruct, String);
 
 impl_more::impl_deref!(MyNewTypeStruct, String);
 impl_more::impl_deref_mut!(MyNewTypeStruct);
+// or, to deref through String too:
+// impl_more::forward_deref_and_mut!(MyNewTypeStruct, ref str);
 
 impl_more::impl_from!(MyNewTypeStruct, String);
 impl_more::impl_into!(MyNewTypeStruct, String);
@@ -22,4 +32,11 @@ enum MyEnum {
 }
 
 impl_more::impl_display_enum!(MyEnum, Bar => "bar", Qux => "qux");
+
+enum Coords {
+    Xy(i64, i64),
+    Xyz(i64, i64, i64),
+}
+
+impl_more::impl_display_enum!(Coords, Xy(x, y) => "{x}, {y}", Xyz(x, y, z) => "{x}, {y}, {z}");
 ```
