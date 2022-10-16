@@ -413,8 +413,8 @@ mod tests {
         enum FooContents2 {
             Qux { msg: &'static str },
         }
-        impl_display_enum!(FooContents2, Qux { msg } => "{msg}");
-        assert_eq!(FooContents2::Qux { msg: "foo" }.to_string(), "x: 4; y: 2");
+        impl_display_enum!(FooContents2, Qux { msg } => "msg: {msg}");
+        assert_eq!(FooContents2::Qux { msg: "foo" }.to_string(), "msg: foo");
 
         // enum FooContents3 {
         //     Bar(u64, u64),
