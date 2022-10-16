@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Add `AsRef`, `AsMut`, `Deref`, and `DerefMut` invocations for structs other than newtypes.
+- Add `impl_as_ref!`, `impl_as_mut!`, `impl_deref!`, and `impl_deref_mut!` invocations for structs other than newtypes.
 - Add support in `impl_display_enum!` for variables interpolation.
 
 ## 0.0.2 - 2022-09-25
