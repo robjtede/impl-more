@@ -1,3 +1,5 @@
+#![allow(clippy::from_over_into, clippy::disallowed_names)]
+
 #[derive(Debug, Clone)]
 struct Foo(String);
 

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add `AsRef`, `AsMut`, `Deref`, and `DerefMut` invocations for structs other than newtypes.
 
 ## 0.0.2 - 2022-09-25
 

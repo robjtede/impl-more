@@ -17,9 +17,17 @@
 #[macro_export]
 macro_rules! impl_as_ref {
     ($ty:ty, $inner:ty) => {
-        impl ::std::convert::AsRef<$inner> for $ty {
+        impl ::core::convert::AsRef<$inner> for $ty {
             fn as_ref(&self) -> &$inner {
                 &self.0
+            }
+        }
+    };
+
+    ($ty:ty, $inner:ty, $field:ident) => {
+        impl ::core::convert::AsRef<$inner> for $ty {
+            fn as_ref(&self) -> &$inner {
+                &self.$field
             }
         }
     };
@@ -47,9 +55,17 @@ macro_rules! impl_as_ref {
 #[macro_export]
 macro_rules! impl_as_mut {
     ($ty:ty, $inner:ty) => {
-        impl ::std::convert::AsMut<$inner> for $ty {
+        impl ::core::convert::AsMut<$inner> for $ty {
             fn as_mut(&mut self) -> &mut $inner {
                 &mut self.0
+            }
+        }
+    };
+
+    ($ty:ty, $inner:ty, $field:ident) => {
+        impl ::core::convert::AsMut<$inner> for $ty {
+            fn as_mut(&mut self) -> &mut $inner {
+                &mut self.$field
             }
         }
     };
@@ -76,11 +92,21 @@ macro_rules! impl_as_mut {
 #[macro_export]
 macro_rules! impl_deref {
     ($ty:ty, $inner:ty) => {
-        impl ::std::ops::Deref for $ty {
+        impl ::core::ops::Deref for $ty {
             type Target = $inner;
 
             fn deref(&self) -> &Self::Target {
                 &self.0
+            }
+        }
+    };
+
+    ($ty:ty, $inner:ty, $field:ident) => {
+        impl ::core::ops::Deref for $ty {
+            type Target = $inner;
+
+            fn deref(&self) -> &Self::Target {
+                ::core::ops::Deref::deref(&self.$field)
             }
         }
     };
@@ -111,9 +137,17 @@ macro_rules! impl_deref {
 #[macro_export]
 macro_rules! impl_deref_mut {
     ($ty:ty) => {
-        impl ::std::ops::DerefMut for $ty {
+        impl ::core::ops::DerefMut for $ty {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.0
+            }
+        }
+    };
+
+    ($ty:ty, $field:ident) => {
+        impl ::core::ops::DerefMut for $ty {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.$field
             }
         }
     };
@@ -135,7 +169,7 @@ macro_rules! impl_deref_mut {
 #[macro_export]
 macro_rules! impl_from {
     ($ty:ty, $inner:ty) => {
-        impl ::std::convert::From<$inner> for $ty {
+        impl ::core::convert::From<$inner> for $ty {
             fn from(inner: $inner) -> Self {
                 Self(inner)
             }
@@ -161,7 +195,7 @@ macro_rules! impl_from {
 #[macro_export]
 macro_rules! impl_into {
     ($ty:ty, $inner:ty) => {
-        impl ::std::convert::Into<$inner> for $ty {
+        impl ::core::convert::Into<$inner> for $ty {
             fn into(self) -> $inner {
                 self.0
             }
@@ -190,8 +224,8 @@ macro_rules! impl_into {
 #[macro_export]
 macro_rules! impl_display_enum {
     ($ty:ty, $($variant:ident => $stringified:literal),+) => {
-        impl ::std::fmt::Display for $ty {
-            fn fmt(&self, fmt: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        impl ::core::fmt::Display for $ty {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 fmt.write_str(match self {
                     $(
                         Self::$variant => $stringified,
@@ -210,7 +244,8 @@ macro_rules! impl_display_enum {
 mod tests {
     #![allow(clippy::from_over_into)]
 
-    use std::ops::{Deref, DerefMut};
+    use alloc::string::{String, ToString as _};
+    use core::ops::{Deref, DerefMut};
 
     #[derive(Debug)]
     struct Foo(String);
@@ -232,6 +267,20 @@ mod tests {
         From<String>,
         Into<String>,
     );
+
+    #[derive(Debug)]
+    struct Bar {
+        foo: Foo,
+    }
+
+    impl_as_ref!(Bar, Foo, foo);
+    impl_as_mut!(Bar, Foo, foo);
+
+    impl_deref!(Bar, String, foo);
+    impl_deref_mut!(Bar, foo);
+
+    // impl_from!(Bar, String);
+    // impl_into!(Bar, String);
 
     #[test]
     fn impl_display() {

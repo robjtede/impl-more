@@ -3,7 +3,9 @@
         "clippy",
         "deref",
         "newtype",
+        "newtypes",
         "nextest",
-        "struct"
+        "struct",
+        "structs"
     ]
 }
