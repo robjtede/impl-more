@@ -3,6 +3,10 @@
 ## Unreleased
 
 
+## 0.0.4 - 2022-10-16
+- No significant changes since `0.0.3`.
+
+
 ## 0.0.3 - 2022-10-16
 
 - Add combined `impl_as_deref_and_mut!` macro.
