@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+
+## 0.0.3 - 2022-10-16
+
 - Add combined `impl_as_deref_and_mut!` macro.
 - Add `forward_deref_and_mut!` macro.
 - Add `impl_as_ref!`, `impl_as_mut!`, `impl_deref!`, and `impl_deref_mut!` invocations for structs other than newtypes.
