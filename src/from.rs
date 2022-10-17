@@ -1,7 +1,4 @@
-/// Implement [`From`] for a newtype struct.
-///
-/// The first argument is that of the newtype struct to create the impl for and the second is the
-/// wrapped type.
+/// Implement [`From`] for a struct.
 ///
 /// # Examples
 /// With a newtype struct:
@@ -60,10 +57,7 @@ macro_rules! impl_from {
     };
 }
 
-/// Implement [`Into`] for a newtype struct.
-///
-/// The first argument is that of the newtype struct to create the impl for and the second is the
-/// wrapped type.
+/// Implement [`Into`] for a struct.
 ///
 /// # Examples
 /// With a newtype struct:
