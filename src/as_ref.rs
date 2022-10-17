@@ -1,7 +1,7 @@
-/// Implement [`AsRef`] for a newtype struct.
+/// Implement [`AsRef`] for a struct.
 ///
-/// The first argument is that of the newtype struct to create the impl for and the second is the
-/// wrapped type.
+/// The first argument is that of the struct to create the impl for and the second is the type to
+/// produce a reference for.
 ///
 /// # Examples
 /// With a newtype struct:
@@ -42,10 +42,10 @@ macro_rules! impl_as_ref {
     };
 }
 
-/// Implement [`AsMut`] for a newtype struct.
+/// Implement [`AsMut`] for a struct.
 ///
-/// The first argument is that of the newtype struct to create the impl for and the second is the
-/// wrapped type.
+/// The first argument is that of the struct to create the impl for and the second is the type to
+/// produce a reference for.
 ///
 /// # Examples
 /// With a newtype struct:

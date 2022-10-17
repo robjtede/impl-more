@@ -7,23 +7,21 @@
 /// Also see [`impl_deref_mut`], [`impl_deref_and_mut`], and [`forward_deref_and_mut`].
 ///
 /// # Examples
+/// With a newtype struct:
 /// ```
-/// use impl_more::impl_deref;
-///
 /// struct Foo(String);
-/// impl_deref!(Foo => String);
+/// impl_more::impl_deref!(Foo => String);
 ///
 /// let mut foo = Foo("bar".to_owned());
 /// assert_eq!(foo.len(), 3);
 /// ```
 ///
+/// With a named field struct and type parameter:
 /// ```
-/// use impl_more::impl_deref;
+/// struct MyStruct<T> { msg: T };
+/// impl_more::impl_deref!(<T> in MyStruct<T> => msg: T);
 ///
-/// struct Foo { msg: String }
-/// impl_deref!(Foo => msg: String);
-///
-/// let mut foo = Foo { msg: "bar".to_owned() };
+/// let foo = MyStruct { msg: "two".to_owned() };
 /// assert_eq!(foo.len(), 3);
 /// ```
 ///
@@ -78,11 +76,14 @@ macro_rules! impl_deref {
 ///
 /// The first argument is that of the struct to create the impl for and this type must also
 /// implement [`Deref`]. The second argument is required for non-newtype structs and is the field
-/// to deref to. Type parameters require special handling, see examples.
+/// to deref to.
+///
+/// This macro has the same type parameter support and format as [`impl_deref`].
 ///
 /// Also see [`impl_deref`], [`impl_deref_and_mut`], and [`forward_deref_and_mut`].
 ///
 /// # Examples
+/// With a newtype struct:
 /// ```
 /// use impl_more::{impl_deref, impl_deref_mut};
 ///
@@ -92,6 +93,18 @@ macro_rules! impl_deref {
 /// impl_deref_mut!(Foo);
 ///
 /// let mut foo = Foo("bar".to_owned());
+/// foo.push('!');
+///
+/// assert_eq!(*foo, "bar!");
+/// ```
+///
+/// With a named field struct and type parameter:
+/// ```
+/// struct Foo<T> { msg: T };
+/// impl_more::impl_deref!(<T> in Foo<T> => msg: T);
+/// impl_more::impl_deref_mut!(<T> in Foo<T> => msg);
+///
+/// let mut foo = Foo { msg: "bar".to_owned() };
 /// foo.push('!');
 ///
 /// assert_eq!(*foo, "bar!");
@@ -142,6 +155,8 @@ macro_rules! impl_deref_mut {
 /// Use the `ref <type>` form for deref-ing to types with lifetimes like `&str`. For newtype
 /// structs, only the struct name and deref target type is necessary.
 ///
+/// This macro has the same type parameter support and format as [`impl_deref`].
+///
 /// Also see [`forward_deref_and_mut`].
 ///
 /// # Examples
@@ -163,6 +178,7 @@ macro_rules! impl_deref_mut {
 ///
 /// [`Deref`]: std::ops::Deref
 /// [`DerefMut`]: std::ops::DerefMut
+/// [`impl_deref`]: crate::impl_deref
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
 #[macro_export]
 macro_rules! impl_deref_and_mut {
@@ -239,22 +255,17 @@ macro_rules! impl_deref_and_mut {
 /// Also see [`impl_deref_and_mut`].
 ///
 /// # Examples
+/// With a newtype struct:
 /// ```
-/// fn accepts_string_slice(_: &str) {}
-/// fn accepts_mut_string_slice(_: &str) {}
-///
+/// # fn accepts_string_slice(_: &str) {}
+/// # fn accepts_mut_string_slice(_: &mut str) {}
+/// #
 /// struct MyNewTypeStruct(String);
 /// impl_more::forward_deref_and_mut!(MyNewTypeStruct => ref str);
-/// let foo = MyNewTypeStruct("one".to_owned());
+/// let mut foo = MyNewTypeStruct("one".to_owned());
 /// let foo_ref: &str = &foo;
 /// accepts_string_slice(&foo);
-/// accepts_mut_string_slice(&foo);
-///
-/// struct MyStruct { msg: String };
-/// impl_more::forward_deref_and_mut!(MyStruct => msg: ref str);
-/// let foo = MyStruct { msg: "two".to_owned() };
-/// accepts_string_slice(&foo);
-/// accepts_mut_string_slice(&foo);
+/// accepts_mut_string_slice(&mut foo);
 /// ```
 ///
 /// [`impl_deref_and_mut`]: crate::impl_deref_and_mut
