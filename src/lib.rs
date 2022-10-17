@@ -27,14 +27,11 @@ mod tests {
     #[derive(Debug)]
     struct Foo(String);
 
-    crate::impl_as_ref!(Foo, String);
-    crate::impl_as_mut!(Foo, String);
+    crate::impl_as_ref!(Foo => String);
+    crate::impl_as_mut!(Foo => String);
 
-    crate::impl_deref!(Foo, String);
+    crate::impl_deref!(Foo => String);
     crate::impl_deref_mut!(Foo);
-
-    crate::impl_from!(Foo, String);
-    crate::impl_into!(Foo, String);
 
     static_assertions::assert_impl_all!(
         Foo:
@@ -43,8 +40,6 @@ mod tests {
         AsMut<String>,
         Deref<Target = String>,
         DerefMut,
-        From<String>,
-        Into<String>,
     );
 
     #[derive(Debug)]
@@ -52,11 +47,11 @@ mod tests {
         foo: Foo,
     }
 
-    crate::impl_as_ref!(Bar, Foo, foo);
-    crate::impl_as_mut!(Bar, Foo, foo);
+    crate::impl_as_ref!(Bar => foo: Foo);
+    crate::impl_as_mut!(Bar => foo: Foo);
 
-    crate::impl_deref!(Bar, String, foo);
-    crate::impl_deref_mut!(Bar, foo);
+    crate::impl_deref!(Bar => foo: String);
+    crate::impl_deref_mut!(Bar => foo);
 
     static_assertions::assert_impl_all!(
         Bar:
@@ -96,6 +91,7 @@ mod tests {
         crate::impl_display_enum!(FooContents2, Qux { msg } => "msg: {msg}");
         assert_eq!(FooContents2::Qux { msg: "foo" }.to_string(), "msg: foo");
 
+        // not supported yet
         // enum FooContents3 {
         //     Bar(u64, u64),
         //     Qux { msg: &'static str },

@@ -11,7 +11,7 @@
 /// use impl_more::impl_deref;
 ///
 /// struct Foo(String);
-/// impl_deref!(Foo, String);
+/// impl_deref!(Foo => String);
 ///
 /// let mut foo = Foo("bar".to_owned());
 /// assert_eq!(foo.len(), 3);
@@ -21,7 +21,7 @@
 /// use impl_more::impl_deref;
 ///
 /// struct Foo { msg: String }
-/// impl_deref!(Foo, String, msg);
+/// impl_deref!(Foo => msg: String);
 ///
 /// let mut foo = Foo { msg: "bar".to_owned() };
 /// assert_eq!(foo.len(), 3);
@@ -33,7 +33,7 @@
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
 #[macro_export]
 macro_rules! impl_deref {
-    ($ty:ty, $target:ty) => {
+    ($ty:ty => $target:ty) => {
         impl ::core::ops::Deref for $ty {
             type Target = $target;
 
@@ -43,7 +43,7 @@ macro_rules! impl_deref {
         }
     };
 
-    ($ty:ty, $target:ty, $field:ident) => {
+    ($ty:ty => $field:ident : $target:ty) => {
         impl ::core::ops::Deref for $ty {
             type Target = $target;
 
@@ -68,7 +68,7 @@ macro_rules! impl_deref {
 ///
 /// struct Foo(String);
 ///
-/// impl_deref!(Foo, String);
+/// impl_deref!(Foo => String);
 /// impl_deref_mut!(Foo);
 ///
 /// let mut foo = Foo("bar".to_owned());
@@ -92,7 +92,7 @@ macro_rules! impl_deref_mut {
         }
     };
 
-    ($ty:ty, $field:ident) => {
+    ($ty:ty => $field:ident) => {
         impl ::core::ops::DerefMut for $ty {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.$field
@@ -111,7 +111,7 @@ macro_rules! impl_deref_mut {
 /// # Examples
 /// ```
 /// struct MyNewTypeStruct(String);
-/// impl_more::impl_deref_and_mut!(MyNewTypeStruct, String);
+/// impl_more::impl_deref_and_mut!(MyNewTypeStruct => String);
 ///
 /// let foo = MyNewTypeStruct("one".to_owned());
 /// let foo_ref: &String = &foo;
@@ -130,7 +130,7 @@ macro_rules! impl_deref_mut {
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
 #[macro_export]
 macro_rules! impl_deref_and_mut {
-    ($ty:ty, $target:ty) => {
+    ($ty:ty => $target:ty) => {
         impl ::core::ops::Deref for $ty {
             type Target = $target;
 
@@ -146,7 +146,7 @@ macro_rules! impl_deref_and_mut {
         }
     };
 
-    ($ty:ty, $target:ty, $field:ident) => {
+    ($ty:ty => $field:ident : $target:ty) => {
         impl ::core::ops::Deref for $ty {
             type Target = $target;
 
@@ -176,15 +176,15 @@ macro_rules! impl_deref_and_mut {
 /// fn accepts_mut_string_slice(_: &str) {}
 ///
 /// struct MyNewTypeStruct(String);
-/// impl_more::forward_deref_and_mut!(MyNewTypeStruct, ref str);
+/// impl_more::forward_deref_and_mut!(MyNewTypeStruct => ref str);
 /// let foo = MyNewTypeStruct("one".to_owned());
 /// let foo_ref: &str = &foo;
 /// accepts_string_slice(&foo);
 /// accepts_mut_string_slice(&foo);
 ///
-/// struct MyStruct { message: String };
-/// impl_more::forward_deref_and_mut!(MyStruct, ref str, message);
-/// let foo = MyStruct { message: "two".to_owned() };
+/// struct MyStruct { msg: String };
+/// impl_more::forward_deref_and_mut!(MyStruct => msg: ref str);
+/// let foo = MyStruct { msg: "two".to_owned() };
 /// accepts_string_slice(&foo);
 /// accepts_mut_string_slice(&foo);
 /// ```
@@ -194,7 +194,7 @@ macro_rules! impl_deref_and_mut {
 /// [`DerefMut`]: std::ops::DerefMut
 #[macro_export]
 macro_rules! forward_deref_and_mut {
-    ($ty:ty, $target:ty) => {
+    ($ty:ty => $target:ty) => {
         impl ::core::ops::Deref for $ty {
             type Target = $target;
 
@@ -210,7 +210,7 @@ macro_rules! forward_deref_and_mut {
         }
     };
 
-    ($ty:ty, ref $target:ty) => {
+    ($ty:ty => ref $target:ty) => {
         impl<'__impl_more_a> ::core::ops::Deref for $ty {
             type Target = $target;
 
@@ -226,7 +226,7 @@ macro_rules! forward_deref_and_mut {
         }
     };
 
-    ($ty:ty, $target:ty, $field:ident) => {
+    ($ty:ty => $field:ident : $target:ty) => {
         impl ::core::ops::Deref for $ty {
             type Target = $target;
 
@@ -242,7 +242,7 @@ macro_rules! forward_deref_and_mut {
         }
     };
 
-    ($ty:ty, ref $target:ty, $field:ident) => {
+    ($ty:ty => $field:ident : ref $target:ty) => {
         impl<'__impl_more_a> ::core::ops::Deref for $ty {
             type Target = $target;
 
@@ -267,7 +267,7 @@ mod tests {
     fn accepts_mut_string_slice(_: &mut str) {}
 
     struct Foo1(String);
-    impl_deref_and_mut!(Foo1, String);
+    impl_deref_and_mut!(Foo1 => String);
     static_assertions::assert_impl_all!(
         Foo1:
         // impls
@@ -276,7 +276,7 @@ mod tests {
     );
 
     struct Foo2(String);
-    forward_deref_and_mut!(Foo2, ref str);
+    forward_deref_and_mut!(Foo2 => ref str);
     static_assertions::assert_impl_all!(
         Foo2:
         // impls
@@ -294,7 +294,7 @@ mod tests {
     struct Foo3 {
         msg: String,
     }
-    forward_deref_and_mut!(Foo3, ref str, msg);
+    forward_deref_and_mut!(Foo3 => msg: ref str);
     static_assertions::assert_impl_all!(
         Foo3:
         // impls

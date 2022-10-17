@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Change form of `impl_as_{ref,mut}!`, `impl_deref[_mut]!`, and `impl_{from,into}!` to be clearer when using named fields.
+- Add support for type parameters when using `impl_as_{ref,mut}!`, `impl_deref[_mut]!`, and `impl_{from,into}!`.
+
 ## 0.0.4 - 2022-10-16
 
 - No significant changes since `0.0.3`.

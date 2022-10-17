@@ -3,14 +3,14 @@
 #[derive(Debug, Clone)]
 struct Foo(String);
 
-impl_more::impl_as_ref!(Foo, String);
-impl_more::impl_as_mut!(Foo, String);
+impl_more::impl_as_ref!(Foo => String);
+impl_more::impl_as_mut!(Foo => String);
 
-impl_more::impl_deref!(Foo, String);
+impl_more::impl_deref!(Foo => String);
 impl_more::impl_deref_mut!(Foo);
 
-impl_more::impl_from!(Foo, String);
-impl_more::impl_into!(Foo, String);
+impl_more::impl_from!(String => Foo);
+impl_more::impl_into!(Foo => String);
 
 #[derive(Debug)]
 enum FooEnum {

@@ -15,16 +15,16 @@
 ```rust
 struct MyNewTypeStruct(String);
 
-impl_more::impl_as_ref!(MyNewTypeStruct, String);
-impl_more::impl_as_mut!(MyNewTypeStruct, String);
+impl_more::impl_as_ref!(MyNewTypeStruct => String);
+impl_more::impl_as_mut!(MyNewTypeStruct => String);
 
-impl_more::impl_deref!(MyNewTypeStruct, String);
+impl_more::impl_deref!(MyNewTypeStruct => String);
 impl_more::impl_deref_mut!(MyNewTypeStruct);
 // or, to deref through String too:
 // impl_more::forward_deref_and_mut!(MyNewTypeStruct, ref str);
 
-impl_more::impl_from!(MyNewTypeStruct, String);
-impl_more::impl_into!(MyNewTypeStruct, String);
+impl_more::impl_from!(String => MyNewTypeStruct);
+impl_more::impl_into!(MyNewTypeStruct => String);
 
 enum MyEnum {
     Bar,
@@ -38,5 +38,9 @@ enum Coords {
     Xyz(i64, i64, i64),
 }
 
-impl_more::impl_display_enum!(Coords, Xy(x, y) => "{x}, {y}", Xyz(x, y, z) => "{x}, {y}, {z}");
+impl_more::impl_display_enum!(
+    Coords,
+    Xy(x, y) => "{x}, {y}",
+    Xyz(x, y, z) => "{x}, {y}, {z}"
+);
 ```
