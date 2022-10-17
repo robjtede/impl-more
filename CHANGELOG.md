@@ -3,6 +3,10 @@
 ## Unreleased
 
 
+## 0.1.1 - 2022-10-17
+- No significant changes since `0.1.0`.
+
+
 ## 0.1.0 - 2022-10-17
 
 - Change form of `impl_as_{ref,mut}!`, `impl_deref[_mut]!`, and `impl_{from,into}!` to be clearer when using named fields.
