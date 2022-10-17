@@ -2,7 +2,7 @@
 ///
 /// The first argument is that of the newtype struct to create the impl for and the second is the
 /// deref target type. The third argument is required for non-newtype structs and is the name of the
-/// field to deref to.
+/// field to deref to. Type parameters require special handling, see examples.
 ///
 /// Also see [`impl_deref_mut`], [`impl_deref_and_mut`], and [`forward_deref_and_mut`].
 ///
@@ -33,8 +33,8 @@
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
 #[macro_export]
 macro_rules! impl_deref {
-    ($ty:ty => $target:ty) => {
-        impl ::core::ops::Deref for $ty {
+    (<$($generic:ident),+> in $this:ty => $target:ty) => {
+        impl <$($generic),+> ::core::ops::Deref for $this {
             type Target = $target;
 
             fn deref(&self) -> &Self::Target {
@@ -43,8 +43,28 @@ macro_rules! impl_deref {
         }
     };
 
-    ($ty:ty => $field:ident : $target:ty) => {
-        impl ::core::ops::Deref for $ty {
+    (<$($generic:ident),+> in $this:ty => $field:ident : $target:ty) => {
+        impl <$($generic),+> ::core::ops::Deref for $this {
+            type Target = $target;
+
+            fn deref(&self) -> &Self::Target {
+                &self.$field
+            }
+        }
+    };
+
+    ($this:ty => $target:ty) => {
+        impl ::core::ops::Deref for $this {
+            type Target = $target;
+
+            fn deref(&self) -> &Self::Target {
+                &self.0
+            }
+        }
+    };
+
+    ($this:ty => $field:ident : $target:ty) => {
+        impl ::core::ops::Deref for $this {
             type Target = $target;
 
             fn deref(&self) -> &Self::Target {
@@ -58,7 +78,7 @@ macro_rules! impl_deref {
 ///
 /// The first argument is that of the struct to create the impl for and this type must also
 /// implement [`Deref`]. The second argument is required for non-newtype structs and is the field
-/// to deref to.
+/// to deref to. Type parameters require special handling, see examples.
 ///
 /// Also see [`impl_deref`], [`impl_deref_and_mut`], and [`forward_deref_and_mut`].
 ///
@@ -84,16 +104,32 @@ macro_rules! impl_deref {
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
 #[macro_export]
 macro_rules! impl_deref_mut {
-    ($ty:ty) => {
-        impl ::core::ops::DerefMut for $ty {
+    (<$($generic:ident),+> in $this:ty) => {
+        impl <$($generic),+> ::core::ops::DerefMut for $this {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.0
             }
         }
     };
 
-    ($ty:ty => $field:ident) => {
-        impl ::core::ops::DerefMut for $ty {
+    (<$($generic:ident),+> in $this:ty => $field:ident) => {
+        impl <$($generic),+> ::core::ops::DerefMut for $this {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.$field
+            }
+        }
+    };
+
+    ($this:ty) => {
+        impl ::core::ops::DerefMut for $this {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.0
+            }
+        }
+    };
+
+    ($this:ty => $field:ident) => {
+        impl ::core::ops::DerefMut for $this {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.$field
             }
@@ -130,8 +166,8 @@ macro_rules! impl_deref_mut {
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
 #[macro_export]
 macro_rules! impl_deref_and_mut {
-    ($ty:ty => $target:ty) => {
-        impl ::core::ops::Deref for $ty {
+    (<$($generic:ident),+> in $this:ty => $target:ty) => {
+        impl <$($generic),+> ::core::ops::Deref for $this {
             type Target = $target;
 
             fn deref(&self) -> &Self::Target {
@@ -139,15 +175,15 @@ macro_rules! impl_deref_and_mut {
             }
         }
 
-        impl ::core::ops::DerefMut for $ty {
+        impl <$($generic),+> ::core::ops::DerefMut for $this {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.0
             }
         }
     };
 
-    ($ty:ty => $field:ident : $target:ty) => {
-        impl ::core::ops::Deref for $ty {
+    (<$($generic:ident),+> in $this:ty => $field:ident : $target:ty) => {
+        impl <$($generic),+> ::core::ops::Deref for $this {
             type Target = $target;
 
             fn deref(&self) -> &Self::Target {
@@ -155,7 +191,39 @@ macro_rules! impl_deref_and_mut {
             }
         }
 
-        impl ::core::ops::DerefMut for $ty {
+        impl <$($generic),+> ::core::ops::DerefMut for $this {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.$field
+            }
+        }
+    };
+
+    ($this:ty => $target:ty) => {
+        impl ::core::ops::Deref for $this {
+            type Target = $target;
+
+            fn deref(&self) -> &Self::Target {
+                &self.0
+            }
+        }
+
+        impl ::core::ops::DerefMut for $this {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.0
+            }
+        }
+    };
+
+    ($this:ty => $field:ident : $target:ty) => {
+        impl ::core::ops::Deref for $this {
+            type Target = $target;
+
+            fn deref(&self) -> &Self::Target {
+                &self.$field
+            }
+        }
+
+        impl ::core::ops::DerefMut for $this {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.$field
             }
@@ -282,6 +350,50 @@ mod tests {
         // impls
         Deref,
         DerefMut,
+    );
+
+    struct SingleGeneric<T>(T);
+    impl_deref!(<T> in SingleGeneric<T> => T);
+    impl_deref_mut!(<T> in SingleGeneric<T>);
+    static_assertions::assert_impl_all!(
+        SingleGeneric<usize>:
+        // impls
+        Deref<Target = usize>,
+        DerefMut<Target = usize>,
+    );
+
+    struct SingleGenericCombined<T>(T);
+    impl_deref_and_mut!(<T> in SingleGenericCombined<T> => T);
+    static_assertions::assert_impl_all!(
+        SingleGenericCombined<usize>:
+        // impls
+        Deref<Target = usize>,
+        DerefMut<Target = usize>,
+    );
+
+    struct DoubleGeneric<T, U> {
+        t: T,
+        _u: U,
+    }
+    impl_deref!(<T, U> in DoubleGeneric<T, U> => t: T);
+    impl_deref_mut!(<T, U> in DoubleGeneric<T, U> => t);
+    static_assertions::assert_impl_all!(
+        DoubleGeneric<usize, u32>:
+        // impls
+        Deref<Target = usize>,
+        DerefMut<Target = usize>,
+    );
+
+    struct DoubleGenericCombined<T, U> {
+        t: T,
+        _u: U,
+    }
+    impl_deref_and_mut!(<T, U> in DoubleGenericCombined<T, U> => t: T);
+    static_assertions::assert_impl_all!(
+        DoubleGenericCombined<usize, u32>:
+        // impls
+        Deref<Target = usize>,
+        DerefMut<Target = usize>,
     );
 
     #[test]

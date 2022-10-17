@@ -17,13 +17,13 @@
 /// use impl_more::impl_from;
 ///
 /// struct Foo<T> { inner: Rc<T> }
-/// impl_from!(<T> for Rc<T> => Foo<T> : inner);
+/// impl_from!(<T> in Rc<T> => Foo<T> : inner);
 ///
 /// let foo = Foo::from(Rc::new("bar".to_owned()));
 /// ```
 #[macro_export]
 macro_rules! impl_from {
-    (<$($generic:ident),+> for $from:ty => $this:ty $(,)?) => {
+    (<$($generic:ident),+> in $from:ty => $this:ty $(,)?) => {
         impl <$($generic),+> ::core::convert::From<$from> for $this {
             fn from(from: $from) -> Self {
                 Self(from)
@@ -31,7 +31,7 @@ macro_rules! impl_from {
         }
     };
 
-    (<$($generic:ident),+> for $from:ty => $this:ty : $field:ident $(,)?) => {
+    (<$($generic:ident),+> in $from:ty => $this:ty : $field:ident $(,)?) => {
         impl <$($generic),+> ::core::convert::From<$from> for $this {
             fn from(from: $from) -> Self {
                 Self { $field: from }
@@ -78,14 +78,14 @@ macro_rules! impl_from {
 /// use impl_more::impl_into;
 ///
 /// struct Foo<T> { inner: Rc<T> }
-/// impl_into!(<T> for Foo<T> => Rc<T> : inner);
+/// impl_into!(<T> in Foo<T> => Rc<T> : inner);
 ///
 /// let foo = Foo { inner: Rc::new("bar".to_owned()) };
 /// let _: Rc<String> = foo.into();
 /// ```
 #[macro_export]
 macro_rules! impl_into {
-    (<$($generic:ident),+> for $this:ty => $inner:ty : $field:ident) => {
+    (<$($generic:ident),+> in $this:ty => $inner:ty : $field:ident) => {
         impl <$($generic),+> ::core::convert::Into<$inner> for $this {
             fn into(self) -> $inner {
                 self.$field
@@ -93,7 +93,7 @@ macro_rules! impl_into {
         }
     };
 
-    (<$($generic:ident),+> for $this:ty => $inner:ty) => {
+    (<$($generic:ident),+> in $this:ty => $inner:ty) => {
         impl <$($generic),+> ::core::convert::Into<$inner> for $this {
             fn into(self) -> $inner {
                 self.0
@@ -137,8 +137,8 @@ mod tests {
     #[test]
     fn newtype_generic() {
         struct Foo<T>(Rc<T>);
-        impl_from!(<T> for Rc<T> => Foo<T>);
-        impl_into!(<T> for Foo<T> => Rc<T>);
+        impl_from!(<T> in Rc<T> => Foo<T>);
+        impl_into!(<T> in Foo<T> => Rc<T>);
 
         let foo = Foo::from(Rc::new(42_usize));
         assert_eq!(*foo.0, 42);
@@ -176,8 +176,8 @@ mod tests {
         struct Foo<T> {
             inner: Rc<T>,
         }
-        impl_from!(<T> for Rc<T> => Foo<T> : inner);
-        impl_into!(<T> for Foo<T> => Rc<T> : inner);
+        impl_from!(<T> in Rc<T> => Foo<T> : inner);
+        impl_into!(<T> in Foo<T> => Rc<T> : inner);
 
         let foo = Foo::from(Rc::new(42_usize));
         assert_eq!(*foo.inner, 42);
