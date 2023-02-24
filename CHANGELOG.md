@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.3 - 2023-02-24
+
 - Support type parameters in `forward_display!`.
 
 ## 0.1.2 - 2023-02-24
