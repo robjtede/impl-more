@@ -21,16 +21,42 @@
 /// # use impl_more::forward_display;
 /// struct Bar {
 ///     inner: u64,
-/// };
+/// }
 ///
 /// impl_more::forward_display!(Bar => inner);
 ///
 /// assert_eq!(Bar { inner: 42 }.to_string(), "42");
 /// ```
 ///
+/// For generic newtype struct (note that `Display` bounds are applied to all type parameters):
+///
+/// ```
+/// # use impl_more::forward_display;
+/// struct Baz<T>(T);
+///
+/// impl_more::forward_display!(<T> in Baz<T>);
+///
+/// assert_eq!(Baz(42u64).to_string(), "42");
+/// ```
+///
 /// [`Display`]: std::fmt::Display
 #[macro_export]
 macro_rules! forward_display {
+    (<$($generic:ident),+> in $this:ty => $field:ident) => {
+        impl <$($generic: ::core::fmt::Display),+> ::core::fmt::Display for $this {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                ::core::fmt::Display::fmt(&self.$field, fmt)
+            }
+        }
+    };
+    (<$($generic:ident),+> in $this:ty) => {
+        impl <$($generic: ::core::fmt::Display),+> ::core::fmt::Display for $this {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                ::core::fmt::Display::fmt(&self.0, fmt)
+            }
+        }
+    };
+
     ($ty:ty) => {
         impl ::core::fmt::Display for $ty {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -146,4 +172,48 @@ macro_rules! impl_display_enum {
     ($ty:ty, $($variant:ident { $($inner:ident),+ } => $format:literal),+ ,) => {
         impl_display_enum!($ty, $($variant ($($inner),+) => $format),+)
     };
+}
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn impl_for_newtype_struct() {
+        struct Foo(String);
+
+        forward_display!(Foo);
+
+        assert_eq!(Foo("hello world".to_owned()).to_string(), "hello world");
+    }
+
+    #[test]
+    fn impl_for_newtype_named_struct() {
+        struct Foo {
+            inner: u64,
+        }
+
+        forward_display!(Foo => inner);
+
+        assert_eq!(Foo { inner: 42 }.to_string(), "42");
+    }
+
+    #[test]
+    fn impl_for_generic_newtype_struct() {
+        struct Foo<T>(T);
+
+        forward_display!(<T> in Foo<T>);
+
+        assert_eq!(Foo(42).to_string(), "42");
+    }
+
+    #[test]
+    fn impl_for_generic_named_struct() {
+        struct Foo<T> {
+            inner: T,
+        }
+
+        forward_display!(<T> in Foo<T> => inner);
+
+        assert_eq!(Foo { inner: 42 }.to_string(), "42");
+    }
 }

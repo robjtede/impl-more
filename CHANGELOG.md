@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Support type parameters in `forward_display!`.
+
 ## 0.1.2 - 2023-02-24
 
 - Add `forward_display!` macro.

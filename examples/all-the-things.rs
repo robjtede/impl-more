@@ -29,6 +29,13 @@ enum FooEnum {
 
 impl_more::impl_display_enum!(FooEnum, Bar => "bar", Qux => "qux");
 
+#[derive(Debug, Clone)]
+struct Baz<T> {
+    inner: T,
+}
+
+impl_more::forward_display!(<T> in Baz<T> => inner);
+
 fn main() {
     let mut foo = Foo("bar".to_owned());
 
