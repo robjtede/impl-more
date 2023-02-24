@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.2 - 2023-02-24
+
 - Add `forward_display!` macro.
 
 ## 0.1.1 - 2022-10-17
