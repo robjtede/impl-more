@@ -12,6 +12,15 @@ impl_more::impl_deref_mut!(Foo);
 impl_more::impl_from!(String => Foo);
 impl_more::impl_into!(Foo => String);
 
+impl_more::forward_display!(Foo);
+
+#[derive(Debug, Clone)]
+struct Bar {
+    inner: String,
+}
+
+impl_more::forward_display!(Bar => inner);
+
 #[derive(Debug)]
 enum FooEnum {
     Bar,

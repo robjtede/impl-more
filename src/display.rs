@@ -1,6 +1,57 @@
-/// Implement [`Display`] for enums using a static string or format args for each variant.
+/// Implements [`Display`] for structs by forwarding to one of its field.
+///
+/// Newtype structs can omit the field identifier.
 ///
 /// # Examples
+///
+/// For newtype struct:
+///
+/// ```
+/// # use impl_more::forward_display;
+/// struct Foo(String);
+///
+/// impl_more::forward_display!(Foo);
+///
+/// assert_eq!(Foo("hello world".to_owned()).to_string(), "hello world");
+/// ```
+///
+/// For struct with named field:
+///
+/// ```
+/// # use impl_more::forward_display;
+/// struct Bar {
+///     inner: u64,
+/// };
+///
+/// impl_more::forward_display!(Bar => inner);
+///
+/// assert_eq!(Bar { inner: 42 }.to_string(), "42");
+/// ```
+///
+/// [`Display`]: std::fmt::Display
+#[macro_export]
+macro_rules! forward_display {
+    ($ty:ty) => {
+        impl ::core::fmt::Display for $ty {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                ::core::fmt::Display::fmt(&self.0, fmt)
+            }
+        }
+    };
+
+    ($ty:ty => $field:ident) => {
+        impl ::core::fmt::Display for $ty {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                ::core::fmt::Display::fmt(&self.$field, fmt)
+            }
+        }
+    };
+}
+
+/// Implements [`Display`] for enums using a static string or format args for each variant.
+///
+/// # Examples
+///
 /// ```
 /// use impl_more::impl_display_enum;
 ///

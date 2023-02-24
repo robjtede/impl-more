@@ -2,10 +2,11 @@
 
 ## Unreleased
 
+- Add `forward_display!` macro.
 
 ## 0.1.1 - 2022-10-17
-- No significant changes since `0.1.0`.
 
+- No significant changes since `0.1.0`.
 
 ## 0.1.0 - 2022-10-17
 
