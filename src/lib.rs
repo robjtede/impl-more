@@ -1,13 +1,19 @@
 //! Concise trait implementations.
+//!
+//! # `#[no_std]`
+//!
+//! Where possible, these macros emit `#[no_std]`-compatible code.
 
-#![cfg_attr(not(feature = "std"), no_std)]
+#![no_std]
 #![forbid(unsafe_code)]
 #![deny(rust_2018_idioms, nonstandard_style)]
 #![warn(future_incompatible)]
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 #[cfg(test)]
 extern crate alloc;
+#[cfg(test)]
+extern crate std;
 
 #[macro_use]
 mod as_ref;
@@ -15,7 +21,6 @@ mod as_ref;
 mod deref;
 #[macro_use]
 mod display;
-#[cfg(feature = "std")]
 #[macro_use]
 mod error;
 #[macro_use]

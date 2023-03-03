@@ -1,5 +1,7 @@
 /// Implements [`Display`] for structs by forwarding to one of its field.
 ///
+/// Emitted code is not compatible with `#[no_std]`.
+///
 /// Newtype structs can omit the field identifier.
 ///
 /// # Examples
@@ -79,6 +81,7 @@ macro_rules! forward_display {
 /// # Examples
 ///
 /// ```
+/// # extern crate alloc;
 /// use impl_more::impl_display_enum;
 ///
 /// enum Foo {
@@ -118,7 +121,7 @@ macro_rules! impl_display_enum {
     };
 
     ($ty:ty, $($variant:ident => $stringified:literal),+ ,) => {
-        impl_display_enum!($ty, $($variant => $stringified),+)
+        $crate::impl_display_enum!($ty, $($variant => $stringified),+)
     };
 
     ($ty:ty, $($variant:ident ($($inner:ident),+) => $format:literal),+) => {
@@ -128,7 +131,7 @@ macro_rules! impl_display_enum {
 
                 // a more efficient method (format_args) is blocked by:
                 // https://github.com/rust-lang/rust/issues/15023
-                let mut buf = ::alloc::string::String::new();
+                let mut buf = ::std::string::String::new();
 
                 match self {
                     $(
@@ -143,7 +146,7 @@ macro_rules! impl_display_enum {
     };
 
     ($ty:ty, $($variant:ident ($($inner:ident),+) => $format:literal),+ ,) => {
-        impl_display_enum!($ty, $($variant ($($inner),+) => $format),+)
+        $crate::impl_display_enum!($ty, $($variant ($($inner),+) => $format),+)
     };
 
     ($ty:ty, $($variant:ident { $($inner:ident),+ } => $format:literal),+) => {
@@ -153,7 +156,7 @@ macro_rules! impl_display_enum {
 
                 // a more efficient method (format_args) is blocked by:
                 // https://github.com/rust-lang/rust/issues/15023
-                let mut buf = ::alloc::string::String::new();
+                let mut buf = ::std::string::String::new();
 
                 match self {
                     $(
@@ -168,7 +171,7 @@ macro_rules! impl_display_enum {
     };
 
     ($ty:ty, $($variant:ident { $($inner:ident),+ } => $format:literal),+ ,) => {
-        impl_display_enum!($ty, $($variant ($($inner),+) => $format),+)
+        $crate::impl_display_enum!($ty, $($variant ($($inner),+) => $format),+)
     };
 
     // TODO: mixed named and positional variant support

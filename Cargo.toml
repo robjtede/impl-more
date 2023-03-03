@@ -10,10 +10,6 @@ license = "MIT OR Apache-2.0"
 edition = "2018"
 rust-version = "1.56"
 
-[features]
-default = ["std"]
-std = []
-
 [dependencies]
 
 [dev-dependencies]
