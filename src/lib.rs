@@ -15,6 +15,9 @@ mod as_ref;
 mod deref;
 #[macro_use]
 mod display;
+#[cfg(feature = "std")]
+#[macro_use]
+mod error;
 #[macro_use]
 mod from;
 

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add on-by-default crate feature `std`.
+- Add basic `Error` derive for enums.
 
 ## 0.1.3 - 2023-02-24
 

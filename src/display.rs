@@ -167,11 +167,11 @@ macro_rules! impl_display_enum {
         }
     };
 
-    // TODO: mixed named and positional variant support
-
     ($ty:ty, $($variant:ident { $($inner:ident),+ } => $format:literal),+ ,) => {
         impl_display_enum!($ty, $($variant ($($inner),+) => $format),+)
     };
+
+    // TODO: mixed named and positional variant support
 }
 
 #[cfg(test)]

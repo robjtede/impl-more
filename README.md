@@ -41,6 +41,6 @@ enum Coords {
 impl_more::impl_display_enum!(
     Coords,
     Xy(x, y) => "{x}, {y}",
-    Xyz(x, y, z) => "{x}, {y}, {z}"
+    Xyz(x, y, z) => "{x}, {y}, {z}",
 );
 ```
