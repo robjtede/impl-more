@@ -120,7 +120,9 @@ macro_rules! impl_into {
 
 #[cfg(test)]
 mod tests {
-    use std::rc::Rc;
+    #![allow(clippy::from_over_into)]
+
+    use alloc::rc::Rc;
 
     #[test]
     fn newtype() {

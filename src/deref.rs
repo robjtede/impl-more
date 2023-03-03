@@ -340,6 +340,7 @@ macro_rules! forward_deref_and_mut {
 
 #[cfg(test)]
 mod tests {
+    use alloc::{borrow::ToOwned as _, string::String};
     use core::ops::{Deref, DerefMut};
 
     fn accepts_string_slice(_: &str) {}
