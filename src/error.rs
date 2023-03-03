@@ -33,8 +33,8 @@ macro_rules! impl_error_enum {
         }
     };
 
-    ($ty:ty, $($variant:ident => $stringified:literal),+) => {
-        impl_display_enum!($ty, $($variant => $stringified),+ ,)
+    ($ty:ty, $($variant:ident ($($inner:ident),+) => $source:expr),+) => {
+        impl_error_enum!($ty, $($variant ($($inner),+) => $source),+ ,)
     };
 
     ($ty:ty, $($variant:ident { $($inner:ident),+ } => $source:expr),+ ,) => {
@@ -50,8 +50,8 @@ macro_rules! impl_error_enum {
         }
     };
 
-    ($ty:ty, $($variant:ident { $($inner:ident),+ } => $format:literal),+) => {
-        impl_display_enum!($ty, $($variant ($($inner),+) => $format),+ ,)
+    ($ty:ty, $($variant:ident { $($inner:ident),+ } => $source:expr),+) => {
+        impl_error_enum!($ty, $($variant { $($inner),+ } => $source),+ ,)
     };
 
     ($ty:ty,) => {
@@ -69,6 +69,8 @@ mod tests {
 
     #[test]
     fn with_trailing_comma() {
+        #![allow(unused)]
+
         #[derive(Debug)]
         enum Foo {
             Bar,
