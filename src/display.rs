@@ -128,7 +128,7 @@ macro_rules! impl_display_enum {
 
                 // a more efficient method (format_args) is blocked by:
                 // https://github.com/rust-lang/rust/issues/15023
-                let mut buf = ::std::string::String::new();
+                let mut buf = ::core::string::String::new();
 
                 match self {
                     $(
@@ -153,7 +153,7 @@ macro_rules! impl_display_enum {
 
                 // a more efficient method (format_args) is blocked by:
                 // https://github.com/rust-lang/rust/issues/15023
-                let mut buf = ::std::string::String::new();
+                let mut buf = ::core::string::String::new();
 
                 match self {
                     $(

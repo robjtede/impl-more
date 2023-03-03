@@ -340,7 +340,7 @@ macro_rules! forward_deref_and_mut {
 
 #[cfg(test)]
 mod tests {
-    use std::ops::{Deref, DerefMut};
+    use core::ops::{Deref, DerefMut};
 
     fn accepts_string_slice(_: &str) {}
     fn accepts_mut_string_slice(_: &mut str) {}

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add on-by-default crate feature `std`.
+
 ## 0.1.3 - 2023-02-24
 
 - Support type parameters in `forward_display!`.
