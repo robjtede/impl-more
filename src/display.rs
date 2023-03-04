@@ -121,7 +121,7 @@ macro_rules! impl_display_enum {
     };
 
     ($ty:ty, $($variant:ident => $stringified:literal),+ ,) => {
-        $crate::impl_display_enum!($ty, $($variant => $stringified),+)
+        $crate::impl_display_enum!($ty, $($variant => $stringified),+);
     };
 
     ($ty:ty, $($variant:ident ($($inner:ident),+) => $format:literal),+) => {
@@ -146,7 +146,7 @@ macro_rules! impl_display_enum {
     };
 
     ($ty:ty, $($variant:ident ($($inner:ident),+) => $format:literal),+ ,) => {
-        $crate::impl_display_enum!($ty, $($variant ($($inner),+) => $format),+)
+        $crate::impl_display_enum!($ty, $($variant ($($inner),+) => $format),+);
     };
 
     ($ty:ty, $($variant:ident { $($inner:ident),+ } => $format:literal),+) => {
@@ -171,7 +171,7 @@ macro_rules! impl_display_enum {
     };
 
     ($ty:ty, $($variant:ident { $($inner:ident),+ } => $format:literal),+ ,) => {
-        $crate::impl_display_enum!($ty, $($variant ($($inner),+) => $format),+)
+        $crate::impl_display_enum!($ty, $($variant ($($inner),+) => $format),+);
     };
 
     // TODO: mixed named and positional variant support

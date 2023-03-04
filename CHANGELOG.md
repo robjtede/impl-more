@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix `impl_display_enum` comma handling.
+
 ## 0.1.4 - 2023-03-04
 
 - Add basic `Error` derive for enums.

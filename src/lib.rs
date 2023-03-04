@@ -1,4 +1,4 @@
-//! Concise trait implementations.
+//! Concise, declarative trait implementation macros.
 //!
 //! # `#[no_std]`
 //!
