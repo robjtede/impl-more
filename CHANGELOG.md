@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.5 - 2023-03-04
+
 - Fix `impl_display_enum` comma handling.
 
 ## 0.1.4 - 2023-03-04
