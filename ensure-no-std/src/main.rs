@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 #![allow(dead_code, clippy::from_over_into)]
+#![feature(default_alloc_error_handler)]
 
 extern crate alloc;
 
@@ -15,11 +16,11 @@ unsafe impl Sync for NoopAllocator {}
 
 unsafe impl GlobalAlloc for NoopAllocator {
     unsafe fn alloc(&self, _layout: Layout) -> *mut u8 {
-        unreachable!()
+        unimplemented!()
     }
 
     unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {
-        unreachable!()
+        unimplemented!()
     }
 }
 

@@ -48,6 +48,8 @@ jobs:
 
   no-std-test:
     docker: [image: cimg/rust:1.63.0]
+    environment:
+      RUSTC_BOOTSTRAP: '1'
     steps:
       - checkout
       - run: cargo --version
