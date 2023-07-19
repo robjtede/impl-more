@@ -25,7 +25,7 @@
 /// assert_eq!(foo.len(), 3);
 /// ```
 ///
-/// [`Deref`]: std::ops::Deref
+/// [`Deref`]: core::ops::Deref
 /// [`impl_deref_mut`]: crate::impl_deref_mut
 /// [`impl_deref_and_mut`]: crate::impl_deref_and_mut
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
@@ -110,8 +110,8 @@ macro_rules! impl_deref {
 /// assert_eq!(*foo, "bar!");
 /// ```
 ///
-/// [`Deref`]: std::ops::Deref
-/// [`DerefMut`]: std::ops::DerefMut
+/// [`Deref`]: core::ops::Deref
+/// [`DerefMut`]: core::ops::DerefMut
 /// [`impl_deref`]: crate::impl_deref
 /// [`impl_deref_and_mut`]: crate::impl_deref_and_mut
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
@@ -176,8 +176,8 @@ macro_rules! impl_deref_mut {
 /// accepts_string_slice(&foo);
 /// ```
 ///
-/// [`Deref`]: std::ops::Deref
-/// [`DerefMut`]: std::ops::DerefMut
+/// [`Deref`]: core::ops::Deref
+/// [`DerefMut`]: core::ops::DerefMut
 /// [`impl_deref`]: crate::impl_deref
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
 #[macro_export]
@@ -269,8 +269,8 @@ macro_rules! impl_deref_and_mut {
 /// ```
 ///
 /// [`impl_deref_and_mut`]: crate::impl_deref_and_mut
-/// [`Deref`]: std::ops::Deref
-/// [`DerefMut`]: std::ops::DerefMut
+/// [`Deref`]: core::ops::Deref
+/// [`DerefMut`]: core::ops::DerefMut
 #[macro_export]
 macro_rules! forward_deref_and_mut {
     ($ty:ty => $target:ty) => {

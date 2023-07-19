@@ -1,4 +1,7 @@
+.DS_Store
+
 /target
+**/*.rs.bak
 /Cargo.lock
 
-.DS_Store
+/.direnv

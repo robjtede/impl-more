@@ -2,7 +2,7 @@ version: 2.1
 
 jobs:
   clippy:
-    docker: [image: cimg/rust:1.63.0]
+    docker: [image: cimg/rust:1.70.0]
     steps:
       - checkout
       - run: cargo --version
@@ -32,13 +32,13 @@ jobs:
             - './target'
 
   doc-test:
-    docker: [image: cimg/rust:1.63.0]
+    docker: [image: cimg/rust:1.70.0]
     steps:
       - checkout
       - run: cargo --version
       - restore_cache: { key: doc-test-cache }
       - run: cargo doc --workspace --all-features --no-deps
-      - run: cargo test --workspace --doc --all-features -- --test-threads=1
+      - run: cargo test --workspace --doc --all-features
       - save_cache:
           key: doc-test-cache
           paths:
@@ -46,7 +46,7 @@ jobs:
             - './target'
 
   no-std-test:
-    docker: [image: cimg/rust:1.63.0]
+    docker: [image: cimg/rust:1.70.0]
     environment:
       RUSTC_BOOTSTRAP: '1'
     steps:

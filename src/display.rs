@@ -51,6 +51,7 @@ macro_rules! forward_display {
             }
         }
     };
+
     (<$($generic:ident),+> in $this:ty) => {
         impl <$($generic: ::core::fmt::Display),+> ::core::fmt::Display for $this {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
