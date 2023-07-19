@@ -34,7 +34,7 @@ jobs:
   doc-test:
     docker: [image: cimg/rust:1.70.0]
     environment:
-      RUSTC_BOOSTRAP: '1'
+      RUSTC_BOOTSTRAP: '1'
       RUSTDOCFLAGS: --cfg=docsrs -Dwarnings
     steps:
       - checkout
