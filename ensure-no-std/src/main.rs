@@ -1,7 +1,6 @@
 #![no_std]
 #![no_main]
 #![allow(dead_code, clippy::from_over_into)]
-#![feature(default_alloc_error_handler)]
 
 extern crate alloc;
 

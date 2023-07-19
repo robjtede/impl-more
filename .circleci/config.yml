@@ -33,6 +33,9 @@ jobs:
 
   doc-test:
     docker: [image: cimg/rust:1.70.0]
+    environment:
+      RUSTC_BOOSTRAP: '1'
+      RUSTDOCFLAGS: --cfg=docsrs -Dwarnings
     steps:
       - checkout
       - run: cargo --version
@@ -47,8 +50,6 @@ jobs:
 
   no-std-test:
     docker: [image: cimg/rust:1.70.0]
-    environment:
-      RUSTC_BOOTSTRAP: '1'
     steps:
       - checkout
       - run: cargo --version

@@ -4,7 +4,7 @@
 //!
 //! Where possible, these macros emit `#[no_std]`-compatible code.
 
-#![no_std]
+#![cfg_attr(not(docsrs), no_std)]
 #![forbid(unsafe_code)]
 #![deny(rust_2018_idioms, nonstandard_style)]
 #![warn(future_incompatible)]

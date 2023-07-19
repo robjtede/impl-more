@@ -6,10 +6,9 @@ clippy:
     cargo clippy --workspace --no-default-features --all-features
 
 test:
-    cargo nextest run --workspace --all-targets --all-features
-    cargo test --workspace --doc --all-features
-    RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps
-    cargo build --target thumbv6m-none-eabi --manifest-path=./ensure-no-std/Cargo.toml
+    cargo test --workspace --all-features
+    RUSTDOCFLAGS="--cfg=docsrs -Dwarnings" cargo +nightly doc --workspace --no-deps --all-features
+    cargo build --target=thumbv6m-none-eabi --manifest-path=./ensure-no-std/Cargo.toml
 
 check:
     just --unstable --fmt --check
