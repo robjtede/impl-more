@@ -39,3 +39,35 @@ enum Err {
 
 impl_more::impl_display_enum!(Err, Io(err) => "{err}", Generic(msg) => "{msg}");
 impl_more::impl_error_enum!(Err, Io(err) => err);
+
+#[test]
+fn forward_error_newtype() {
+    use std::error::Error as _;
+
+    #[derive(Debug)]
+    struct MyError(eyre::Report);
+
+    impl_more::forward_display!(MyError);
+    impl_more::forward_error!(MyError);
+
+    let err = MyError(eyre::eyre!("something went wrong"));
+    assert_eq!(err.source().unwrap().to_string(), "something went wrong");
+}
+
+#[test]
+fn forward_error_field() {
+    use std::error::Error as _;
+
+    #[derive(Debug)]
+    struct MyError {
+        cause: eyre::Report,
+    }
+
+    impl_more::forward_display!(MyError => cause);
+    impl_more::forward_error!(MyError => cause);
+
+    let err = MyError {
+        cause: eyre::eyre!("something went wrong"),
+    };
+    assert_eq!(err.source().unwrap().to_string(), "something went wrong");
+}

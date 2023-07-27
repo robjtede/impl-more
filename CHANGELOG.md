@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.1.6
+
+- Add `forward_error` derive for non-generic error wrappers.
+
 ## 0.1.5 - 2023-03-04
 
 - Fix `impl_display_enum` comma handling.

@@ -5,10 +5,10 @@
 <!-- prettier-ignore-start -->
 
 [![crates.io](https://img.shields.io/crates/v/impl-more?label=latest)](https://crates.io/crates/impl-more)
-[![Documentation](https://docs.rs/impl-more/badge.svg)](https://docs.rs/impl-more/0.1.5)
+[![Documentation](https://docs.rs/impl-more/badge.svg)](https://docs.rs/impl-more/0.1.6)
 ![MIT or Apache 2.0 licensed](https://img.shields.io/crates/l/impl-more.svg)
 <br />
-[![dependency status](https://deps.rs/crate/impl-more/0.1.5/status.svg)](https://deps.rs/crate/impl-more/0.1.5)
+[![dependency status](https://deps.rs/crate/impl-more/0.1.6/status.svg)](https://deps.rs/crate/impl-more/0.1.6)
 [![Download](https://img.shields.io/crates/d/impl-more.svg)](https://crates.io/crates/impl-more)
 [![CircleCI](https://circleci.com/gh/robjtede/impl-more/tree/main.svg?style=shield)](https://circleci.com/gh/robjtede/impl-more/tree/main)
 
@@ -47,6 +47,15 @@ impl_more::impl_display_enum!(
     Xy(x, y) => "{x}, {y}",
     Xyz(x, y, z) => "{x}, {y}, {z}",
 );
+
+#[derive(Debug)]
+struct MyError(eyre::Report);
+
+impl_more::forward_display!(MyError);
+impl_more::forward_error!(MyError);
+
+let err = MyError(eyre::eyre!("something went wrong"));
+assert_eq!(err.source().unwrap().to_string(), "something went wrong");
 
 #[derive(Debug)]
 enum Err {

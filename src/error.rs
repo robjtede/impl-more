@@ -1,3 +1,65 @@
+/// Implements [`Error`] for structs and forwards the `source` implementation to one of its fields.
+///
+/// Emitted code is not compatible with `#[no_std]`.
+///
+/// Newtype structs can omit the field identifier.
+///
+/// # Examples
+///
+/// For newtype struct:
+///
+/// ```
+/// use std::error::Error as _;
+///
+/// #[derive(Debug)]
+/// struct MyError(eyre::Report);
+///
+/// impl_more::forward_display!(MyError);
+/// impl_more::forward_error!(MyError);
+///
+/// let err = MyError(eyre::eyre!("something went wrong"));
+/// assert_eq!(err.source().unwrap().to_string(), "something went wrong");
+/// ```
+///
+/// For struct with named field:
+///
+/// ```
+/// use std::error::Error as _;
+///
+/// #[derive(Debug)]
+/// struct MyError {
+///     cause: eyre::Report,
+/// }
+///
+/// impl_more::forward_display!(MyError => cause);
+/// impl_more::forward_error!(MyError => cause);
+///
+/// let err = MyError { cause: eyre::eyre!("something went wrong") };
+/// assert_eq!(err.source().unwrap().to_string(), "something went wrong");
+/// ```
+///
+/// This macro does not yet support use with generic error wrappers.
+///
+/// [`Error`]: std::error::Error
+#[macro_export]
+macro_rules! forward_error {
+    ($ty:ty) => {
+        impl ::std::error::Error for $ty {
+            fn source(&self) -> Option<&(dyn ::std::error::Error + 'static)> {
+                Some(::core::ops::Deref::deref(&self.0))
+            }
+        }
+    };
+
+    ($ty:ty => $field:ident) => {
+        impl ::std::error::Error for $ty {
+            fn source(&self) -> Option<&(dyn ::std::error::Error + 'static)> {
+                Some(::core::ops::Deref::deref(&self.$field))
+            }
+        }
+    };
+}
+
 /// Implements [`Error`] for enums.
 ///
 /// Emitted code is not compatible with `#[no_std]`.

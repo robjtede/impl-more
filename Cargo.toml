@@ -1,6 +1,6 @@
 [package]
 name = "impl-more"
-version = "0.1.5"
+version = "0.1.6"
 description = "Concise, declarative trait implementation macros"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 keywords = ["derive", "implement", "implementations", "no-std"]
@@ -13,4 +13,5 @@ rust-version = "1.56"
 [dependencies]
 
 [dev-dependencies]
+eyre = "0.6"
 static_assertions = "1.1"
