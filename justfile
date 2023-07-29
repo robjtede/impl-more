@@ -3,7 +3,7 @@ _list:
 
 clippy:
     cargo clippy --workspace --no-default-features
-    cargo clippy --workspace --no-default-features --all-features
+    cargo clippy --workspace --all-features
 
 test:
     cargo test --workspace --all-features
