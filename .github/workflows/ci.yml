@@ -48,9 +48,9 @@ jobs:
         with:
           tool: just,nextest
 
-      - name: workaround MSRV issues
-        if: matrix.toolchain.name == 'msrv'
-        run: just downgrade-msrv
+      # - name: workaround MSRV issues
+      #   if: matrix.toolchain.name == 'msrv'
+      #   run: just downgrade-msrv
 
       - name: Test
         # run: just test-no-coverage
