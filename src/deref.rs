@@ -340,6 +340,8 @@ macro_rules! forward_deref_and_mut {
 
 #[cfg(test)]
 mod tests {
+    #![allow(dead_code)]
+
     use alloc::{borrow::ToOwned as _, string::String};
     use core::ops::{Deref, DerefMut};
 

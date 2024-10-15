@@ -2,6 +2,7 @@
     "cSpell.words": [
         "clippy",
         "deref",
+        "docsrs",
         "impls",
         "newtype",
         "newtypes",

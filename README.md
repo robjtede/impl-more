@@ -5,10 +5,10 @@
 <!-- prettier-ignore-start -->
 
 [![crates.io](https://img.shields.io/crates/v/impl-more?label=latest)](https://crates.io/crates/impl-more)
-[![Documentation](https://docs.rs/impl-more/badge.svg)](https://docs.rs/impl-more/0.1.6)
+[![Documentation](https://docs.rs/impl-more/badge.svg)](https://docs.rs/impl-more/0.1.7)
 ![MIT or Apache 2.0 licensed](https://img.shields.io/crates/l/impl-more.svg)
 <br />
-[![dependency status](https://deps.rs/crate/impl-more/0.1.6/status.svg)](https://deps.rs/crate/impl-more/0.1.6)
+[![dependency status](https://deps.rs/crate/impl-more/0.1.7/status.svg)](https://deps.rs/crate/impl-more/0.1.7)
 [![Download](https://img.shields.io/crates/d/impl-more.svg)](https://crates.io/crates/impl-more)
 [![CircleCI](https://circleci.com/gh/robjtede/impl-more/tree/main.svg?style=shield)](https://circleci.com/gh/robjtede/impl-more/tree/main)
 

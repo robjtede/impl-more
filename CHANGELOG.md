@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.1.7
+
+- Add `impl_from_for_primitive!` macro.
+
 ## 0.1.6
 
 - Add `forward_error` derive for non-generic error wrappers.

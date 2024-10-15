@@ -5,9 +5,6 @@
 //! Where possible, these macros emit `#[no_std]`-compatible code.
 
 #![cfg_attr(not(docsrs), no_std)]
-#![forbid(unsafe_code)]
-#![deny(rust_2018_idioms, nonstandard_style)]
-#![warn(future_incompatible)]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 #[cfg(test)]
@@ -28,7 +25,7 @@ mod from;
 
 #[cfg(test)]
 mod tests {
-    #![allow(clippy::from_over_into)]
+    #![allow(dead_code, clippy::from_over_into)]
 
     use alloc::string::{String, ToString as _};
     use core::ops::{Deref, DerefMut};
