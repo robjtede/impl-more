@@ -41,6 +41,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1.9.0
         with:
           toolchain: ${{ matrix.toolchain.version }}
+          target: thumbv6m-none-eabi
 
       - name: Install just, nextest
         uses: taiki-e/install-action@v2.44.5
@@ -54,6 +55,10 @@ jobs:
       - name: Test
         # run: just test-no-coverage
         run: cargo nextest run --workspace --all-targets --all-features
+
+      - name: Build (no-std)
+        # run: just test-no-coverage
+        run: cargo build --target thumbv6m-none-eabi --manifest-path=./ensure-no-std/Cargo.toml
 #
 # TODO: migate circle CI jobs
 #
@@ -70,7 +75,7 @@ jobs:
 #           paths:
 #             - '~/.cargo'
 #             - './target'
-
+#
 #   doc-test:
 #     docker: [image: cimg/rust:1.70.0]
 #     environment:
@@ -87,25 +92,3 @@ jobs:
 #           paths:
 #             - '~/.cargo'
 #             - './target'
-
-#   no-std-test:
-#     docker: [image: cimg/rust:1.70.0]
-#     steps:
-#       - checkout
-#       - run: cargo --version
-#       - restore_cache: { key: no-std-cache }
-#       - run: rustup target add thumbv6m-none-eabi
-#       - run: cargo build --target thumbv6m-none-eabi --manifest-path=./ensure-no-std/Cargo.toml
-#       - save_cache:
-#           key: no-std-cache
-#           paths:
-#             - '~/.cargo'
-#             - './target'
-
-# workflows:
-#   all_checks:
-#     jobs:
-#       - clippy
-#       - test
-#       - doc-test
-#       - no-std-test
