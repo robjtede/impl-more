@@ -57,6 +57,7 @@ jobs:
         run: cargo nextest run --workspace --all-targets --all-features
 
       - name: Build (no-std)
+        if: matrix.toolchain.name == 'stable'
         # run: just test-no-coverage
         run: cargo build --target thumbv6m-none-eabi --manifest-path=./ensure-no-std/Cargo.toml
 #
