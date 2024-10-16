@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.1.8
+
+- Add `impl_display!` macro.
+
 ## 0.1.7
 
 - Add `impl_from_for_primitive!` macro.

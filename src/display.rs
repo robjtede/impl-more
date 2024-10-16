@@ -77,6 +77,61 @@ macro_rules! forward_display {
     };
 }
 
+/// Implements [`Display`] for structs using a `format!`-like string constructor.
+///
+/// # Examples
+///
+/// Display implementation can be just a string literal.
+///
+/// ```
+/// # use impl_more::forward_display;
+/// struct Hello;
+/// impl_more::impl_display!(Foo; "hello world");
+/// assert_eq!(Hello.to_string(), "hello world");
+/// ```
+///
+/// Explicit and inline format args are supported.
+///
+/// ```
+/// # use impl_more::forward_display;
+/// struct Hello2;
+/// impl_more::impl_display!(Foo; "hello world {}", 2);
+/// assert_eq!(Hello2.to_string(), "hello world 2");
+///
+/// const HI: &str = "hello"
+///
+/// struct Hello3;
+/// impl_more::impl_display!(Foo; "{HI} world");
+/// assert_eq!(Foo.to_string(), "hello world");
+/// ```
+///
+/// [`Display`]: std::fmt::Display
+#[macro_export]
+macro_rules! impl_display {
+    // no format args
+    ($ty:ty; $format:literal) => {
+        impl ::core::fmt::Display for $ty {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                ::core::write!(fmt, $format)
+            }
+        }
+    };
+
+    // with explicit format args
+    ($ty:ty; $format:literal, $($args:expr),+) => {
+        impl ::core::fmt::Display for $ty {
+            fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                ::core::write!(fmt, $format, $($args),+)
+            }
+        }
+    };
+
+    // strip trailing comma and forward to format args branch
+    ($ty:ty; $format:literal, $($args:expr),+ ,) => {
+        $crate::impl_display!($ty; $format, $($args),+);
+    };
+}
+
 /// Implements [`Display`] for enums using a static string or format args for each variant.
 ///
 /// # Examples
@@ -186,7 +241,7 @@ mod tests {
     };
 
     #[test]
-    fn impl_for_newtype_struct() {
+    fn impl_forward_for_newtype_struct() {
         struct Foo(String);
 
         forward_display!(Foo);
@@ -195,7 +250,7 @@ mod tests {
     }
 
     #[test]
-    fn impl_for_newtype_named_struct() {
+    fn impl_forward_newtype_named_struct() {
         struct Foo {
             inner: u64,
         }
@@ -206,7 +261,7 @@ mod tests {
     }
 
     #[test]
-    fn impl_for_generic_newtype_struct() {
+    fn impl_forward_generic_newtype_struct() {
         struct Foo<T>(T);
 
         forward_display!(<T> in Foo<T>);
@@ -215,7 +270,7 @@ mod tests {
     }
 
     #[test]
-    fn impl_for_generic_named_struct() {
+    fn impl_forward_generic_named_struct() {
         struct Foo<T> {
             inner: T,
         }
@@ -223,5 +278,28 @@ mod tests {
         forward_display!(<T> in Foo<T> => inner);
 
         assert_eq!(Foo { inner: 42 }.to_string(), "42");
+    }
+
+    #[test]
+    fn impl_basic_for_unit_struct() {
+        struct Foo;
+        impl_display!(Foo; "foo");
+        assert_eq!(Foo.to_string(), "foo");
+    }
+
+    #[test]
+    fn impl_basic_with_args() {
+        struct Foo;
+        impl_display!(Foo; "foo {} {}", 2, 3);
+        assert_eq!(Foo.to_string(), "foo 2 3");
+    }
+
+    #[test]
+    fn impl_basic_with_inline_args() {
+        const HI: &str = "hello";
+
+        struct Hello3;
+        impl_display!(Hello3; "{HI} world");
+        assert_eq!(Hello3.to_string(), "hello world");
     }
 }
