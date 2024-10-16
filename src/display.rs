@@ -294,6 +294,7 @@ mod tests {
         assert_eq!(Foo.to_string(), "foo 2 3");
     }
 
+    #[rustversion::stable(1.58)]
     #[test]
     fn impl_basic_with_inline_args() {
         const HI: &str = "hello";

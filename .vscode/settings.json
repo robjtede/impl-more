@@ -7,6 +7,7 @@
         "newtype",
         "newtypes",
         "nextest",
+        "rustversion",
         "struct",
         "structs"
     ]
