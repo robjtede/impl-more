@@ -86,7 +86,7 @@ macro_rules! forward_display {
 /// ```
 /// # use impl_more::forward_display;
 /// struct Hello;
-/// impl_more::impl_display!(Foo; "hello world");
+/// impl_more::impl_display!(Hello; "hello world");
 /// assert_eq!(Hello.to_string(), "hello world");
 /// ```
 ///
@@ -95,14 +95,14 @@ macro_rules! forward_display {
 /// ```
 /// # use impl_more::forward_display;
 /// struct Hello2;
-/// impl_more::impl_display!(Foo; "hello world {}", 2);
+/// impl_more::impl_display!(Hello2; "hello world {}", 2);
 /// assert_eq!(Hello2.to_string(), "hello world 2");
 ///
-/// const HI: &str = "hello"
+/// const HI: &str = "hello";
 ///
 /// struct Hello3;
-/// impl_more::impl_display!(Foo; "{HI} world");
-/// assert_eq!(Foo.to_string(), "hello world");
+/// impl_more::impl_display!(Hello3; "{HI} world");
+/// assert_eq!(Hello3.to_string(), "hello world");
 /// ```
 ///
 /// [`Display`]: std::fmt::Display
