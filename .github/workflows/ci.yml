@@ -70,10 +70,10 @@ jobs:
       - name: Install Rust (stable)
         uses: actions-rust-lang/setup-rust-toolchain@v1.9.0
 
-      - name: Install just,nextest
+      - name: Install just
         uses: taiki-e/install-action@v2.44.5
         with:
           tool: just
 
-      - name: Test
+      - name: Check with Clippy
         run: just clippy
