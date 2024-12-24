@@ -55,6 +55,10 @@ jobs:
       - name: Test
         run: just test-no-coverage
 
+      - name: Test documentation
+        if: matrix.toolchain.name == 'stable'
+        run: just test-docs
+
       - name: Build (no-std)
         if: matrix.toolchain.name == 'stable'
         run: just build-no-std
