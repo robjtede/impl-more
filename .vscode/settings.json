@@ -7,8 +7,11 @@
         "newtype",
         "newtypes",
         "nextest",
+        "nixpkgs",
+        "pkgs",
         "rustversion",
         "struct",
-        "structs"
+        "structs",
+        "taplo"
     ]
 }
