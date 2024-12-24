@@ -1,7 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
   };
 
   outputs = inputs@{ flake-parts, ... }:
@@ -13,14 +12,15 @@
         devShells.default = pkgs.mkShell {
           packages = [
             config.formatter
-            inputs'.nixpkgs-unstable.legacyPackages.nodePackages.prettier
-            pkgs.taplo
+            pkgs.fd
             pkgs.just
+            pkgs.nodePackages.prettier
+            pkgs.taplo
           ] ++ lib.optional pkgs.stdenv.isDarwin [
-            pkgs.pkgsBuildHost.libiconv
-            pkgs.pkgsBuildHost.darwin.apple_sdk.frameworks.Security
             pkgs.pkgsBuildHost.darwin.apple_sdk.frameworks.CoreFoundation
+            pkgs.pkgsBuildHost.darwin.apple_sdk.frameworks.Security
             pkgs.pkgsBuildHost.darwin.apple_sdk.frameworks.SystemConfiguration
+            pkgs.pkgsBuildHost.libiconv
           ];
         };
       };

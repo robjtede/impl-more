@@ -1,4 +1,4 @@
-#![allow(dead_code, clippy::from_over_into)]
+#![allow(missing_docs, dead_code, clippy::from_over_into)]
 
 struct MyNewTypeStruct(String);
 

@@ -43,53 +43,37 @@ jobs:
           toolchain: ${{ matrix.toolchain.version }}
           target: thumbv6m-none-eabi
 
-      - name: Install just, nextest
+      - name: Install just,nextest
         uses: taiki-e/install-action@v2.44.5
         with:
           tool: just,nextest
 
-      # - name: workaround MSRV issues
-      #   if: matrix.toolchain.name == 'msrv'
-      #   run: just downgrade-msrv
+      - name: Workaround MSRV issues
+        if: matrix.toolchain.name == 'msrv'
+        run: just downgrade-msrv
 
       - name: Test
-        # run: just test-no-coverage
-        run: cargo nextest run --workspace --all-targets --all-features
+        run: just test-no-coverage
 
       - name: Build (no-std)
         if: matrix.toolchain.name == 'stable'
-        # run: just test-no-coverage
-        run: cargo build --target thumbv6m-none-eabi --manifest-path=./ensure-no-std/Cargo.toml
-#
-# TODO: migate circle CI jobs
-#
-# jobs:
-#   clippy:
-#     docker: [image: cimg/rust:1.70.0]
-#     steps:
-#       - checkout
-#       - run: cargo --version
-#       - restore_cache: { key: clippy-cache }
-#       - run: cargo clippy --workspace --all-targets --all-features
-#       - save_cache:
-#           key: clippy-cache
-#           paths:
-#             - '~/.cargo'
-#             - './target'
-#
-#   doc-test:
-#     docker: [image: cimg/rust:1.70.0]
-#     environment:
-#       RUSTC_BOOTSTRAP: '1'
-#       RUSTDOCFLAGS: --cfg=docsrs -Dwarnings
-#     steps:
-#       - checkout
-#       - run: cargo --version
-#       - restore_cache: { key: doc-test-cache }
-#       - run: cargo doc --workspace --all-features --no-deps
-#       - run: cargo test --workspace --doc --all-features
-#       - save_cache:
-#           key: doc-test-cache
-#           paths:
-#             - '~/.cargo'
-#             - './target'
+        run: just build-no-std
+
+  clippy:
+    runs-on: ubuntu-latest
+
+    name: Clippy
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust (stable)
+        uses: actions-rust-lang/setup-rust-toolchain@v1.9.0
+
+      - name: Install just
+        uses: taiki-e/install-action@v2.44.5
+        with:
+          tool: just
+
+      - name: Check with Clippy
+        run: just clippy
