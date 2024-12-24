@@ -33,12 +33,16 @@ test: test-no-coverage build-no-std
 # Test workspace (without generating coverage output).
 test-no-coverage:
     cargo nextest run --workspace --all-targets --all-features
+
+# Test docs.
+test-docs:
     cargo test --doc --workspace --all-features
 
 # Test workspace (without generating coverage output).
 build-no-std:
     cargo build --target=thumbv6m-none-eabi --manifest-path=./ensure-no-std/Cargo.toml
 
+# Build rustdoc.
 doc:
     rm "$(cargo metadata --format-version=1 | jq -r '.target_directory')/doc/crates.js"
     RUSTDOCFLAGS="--cfg=docsrs -Dwarnings" cargo +nightly doc --workspace --no-deps --all-features

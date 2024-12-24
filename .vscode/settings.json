@@ -3,6 +3,7 @@
         "clippy",
         "deref",
         "docsrs",
+        "doctests",
         "impls",
         "newtype",
         "newtypes",
