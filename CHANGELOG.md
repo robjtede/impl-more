@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.1.9
+
+- No significant changes since `0.1.8`.
+
 ## 0.1.8
 
 - Add `impl_display!` macro.
