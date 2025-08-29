@@ -65,16 +65,49 @@ macro_rules! impl_from {
 /// use impl_more::impl_from_for_primitive;
 ///
 /// struct Checked(bool);
-/// impl_from_for_primitive!(bool; from Checked);
+/// impl_from_for_primitive!(Checked => bool);
 ///
 /// let foo = bool::from(Checked(true));
 /// ```
 #[macro_export]
 macro_rules! impl_from_for_primitive {
-    ($this:ty; from $from:ty $(,)?) => {
+    ($from:ty => $this:ty $(,)?) => {
         impl ::core::convert::From<$from> for $this {
             fn from(from: $from) -> $this {
                 <$this as ::core::convert::From<_>>::from(from.0)
+            }
+        }
+    };
+}
+
+/// Implement [`From`] and [`Into`] for a newtype struct.
+///
+/// # Examples
+///
+/// ```
+/// use impl_more::impl_newtype_from_into;
+///
+/// struct Checked(bool);
+/// impl_newtype_from_into!(Checked [<=>] bool);
+///
+/// let foo = Checked::from(true);
+/// assert_eq!(foo.0, true);
+///
+/// let foo = bool::from(Checked(false));
+/// assert_eq!(foo, false);
+/// ```
+#[macro_export]
+macro_rules! impl_newtype_from_into {
+    ($newtype:ty [<=>] $inner:ty $(,)?) => {
+        impl ::core::convert::From<$inner> for $newtype {
+            fn from(from: $inner) -> $newtype {
+                Self(from)
+            }
+        }
+
+        impl ::core::convert::From<$newtype> for $inner {
+            fn from(from: $newtype) -> $inner {
+                from.0
             }
         }
     };
@@ -163,7 +196,7 @@ mod tests {
     fn newtype_primitive() {
         struct Foo(usize);
         impl_from!(usize => Foo);
-        impl_from_for_primitive!(usize; from Foo);
+        impl_from_for_primitive!(Foo => usize);
 
         static_assertions::assert_impl_all!(Foo: From<usize>);
         static_assertions::assert_impl_all!(usize: From<Foo>);

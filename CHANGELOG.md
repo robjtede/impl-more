@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add `impl_newtype_from_into!` macro.
+- Syntax for `impl_from_for_primitive!` macro now matches `impl_from!`.
+
 ## 0.2.0
 
 - Add `impl_leaf_error!` macro.
