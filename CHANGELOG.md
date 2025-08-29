@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.0
+
 - Add `impl_newtype_from_into!` macro.
 - Syntax for `impl_from_for_primitive!` macro now matches `impl_from!`.
 
