@@ -1,11 +1,11 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   merge_group:
     types: [checks_requested]
-  pull_request:
+  push:
     branches: [main]
 
 permissions:
