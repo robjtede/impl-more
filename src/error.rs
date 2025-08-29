@@ -8,7 +8,7 @@
 ///
 /// For newtype struct:
 ///
-/// ```
+/// ```ignore # due to MSRV
 /// use std::error::Error as _;
 ///
 /// #[derive(Debug)]
@@ -23,7 +23,7 @@
 ///
 /// For struct with named field:
 ///
-/// ```
+/// ```ignore # due to MSRV
 /// use std::error::Error as _;
 ///
 /// #[derive(Debug)]
@@ -66,7 +66,7 @@ macro_rules! forward_error {
 ///
 /// # Examples
 ///
-/// ```
+/// ```ignore # due to MSRV
 /// # extern crate alloc;
 /// use core::error::Error as _;
 ///
@@ -86,7 +86,7 @@ macro_rules! forward_error {
 ///
 /// Leaf errors are also supported:
 ///
-/// ```
+/// ```ignore # due to MSRV
 /// #[derive(Debug)]
 /// struct LeafError;
 ///
@@ -141,6 +141,7 @@ macro_rules! impl_error_enum {
 }
 
 #[cfg(test)]
+#[rustversion::since(1.81)]
 mod tests {
     use alloc::string::String;
     use core::error::Error as _;
