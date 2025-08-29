@@ -1,6 +1,6 @@
 .DS_Store
 
-/target
+target/
 **/*.rs.bak
 /Cargo.lock
 
