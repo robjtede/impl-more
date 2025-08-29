@@ -309,13 +309,12 @@ mod tests {
         assert_eq!(Foo.to_string(), "foo 2 3");
     }
 
-    #[rustversion::stable(1.58)]
     #[test]
     fn impl_basic_with_inline_args() {
         const HI: &str = "hello";
 
         struct Hello3;
-        impl_display!(Hello3; "{HI} world");
+        impl_display!(Hello3: "{HI} world");
         assert_eq!(Hello3.to_string(), "hello world");
     }
 }
