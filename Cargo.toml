@@ -8,7 +8,7 @@ categories = ["development-tools", "no-std"]
 repository = "https://github.com/robjtede/impl-more"
 license = "MIT OR Apache-2.0"
 edition = "2018"
-rust-version = "1.56"
+rust-version = "1.58"
 
 [dependencies]
 

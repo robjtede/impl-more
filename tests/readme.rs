@@ -23,12 +23,14 @@ impl_more::impl_display_enum!(MyEnum: Bar => "bar", Qux => "qux");
 enum Coords {
     Xy(i64, i64),
     Xyz(i64, i64, i64),
+    Uv(i64, i64),
 }
 
 impl_more::impl_display_enum!(
     Coords:
     Xy(x, y) => "{x}, {y}",
     Xyz(x, y, z) => "{x}, {y}, {z}",
+    Uv(u, _) => "{u}",
 );
 
 #[derive(Debug)]

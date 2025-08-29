@@ -3,10 +3,12 @@
 ## Unreleased
 
 - Add `impl_leaf_error!` macro.
+- Allow `impl_display_enum!` to omit variant's bindings.
 - Remove leaf error support from `impl_error_enum!`.
 - Change delimiter after type of `impl_error_enum!` to `:`.
 - Change delimiter after type of `impl_display!` and `impl_display_enum!` to `:`.
 - Emit `core::error::Error` in `forward_error!` and `impl_error_enum!`.
+- Minimum supported Rust version (MSRV) is now 1.58.
 
 ## 0.1.9
 

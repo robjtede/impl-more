@@ -86,7 +86,7 @@ macro_rules! forward_display {
 /// ```
 /// # use impl_more::forward_display;
 /// struct Hello;
-/// impl_more::impl_display!(Hello; "hello world");
+/// impl_more::impl_display!(Hello: "hello world");
 /// assert_eq!(Hello.to_string(), "hello world");
 /// ```
 ///
@@ -95,13 +95,13 @@ macro_rules! forward_display {
 /// ```
 /// # use impl_more::forward_display;
 /// struct Hello2;
-/// impl_more::impl_display!(Hello2; "hello world {}", 2);
+/// impl_more::impl_display!(Hello2: "hello world {}", 2);
 /// assert_eq!(Hello2.to_string(), "hello world 2");
 ///
 /// const HI: &str = "hello";
 ///
 /// struct Hello3;
-/// impl_more::impl_display!(Hello3; "{HI} world");
+/// impl_more::impl_display!(Hello3: "{HI} world");
 /// assert_eq!(Hello3.to_string(), "hello world");
 /// ```
 ///
@@ -109,7 +109,7 @@ macro_rules! forward_display {
 #[macro_export]
 macro_rules! impl_display {
     // no format args
-    ($ty:ty; $format:literal) => {
+    ($ty:ty: $format:literal) => {
         impl ::core::fmt::Display for $ty {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 ::core::write!(fmt, $format)
@@ -118,7 +118,7 @@ macro_rules! impl_display {
     };
 
     // with explicit format args
-    ($ty:ty; $format:literal, $($args:expr),+) => {
+    ($ty:ty: $format:literal, $($args:expr),+) => {
         impl ::core::fmt::Display for $ty {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 ::core::write!(fmt, $format, $($args),+)
@@ -127,8 +127,8 @@ macro_rules! impl_display {
     };
 
     // strip trailing comma and forward to format args branch
-    ($ty:ty; $format:literal, $($args:expr),+ ,) => {
-        $crate::impl_display!($ty; $format, $($args),+);
+    ($ty:ty: $format:literal, $($args:expr),+ ,) => {
+        $crate::impl_display!($ty: $format, $($args),+);
     };
 }
 
@@ -180,7 +180,7 @@ macro_rules! impl_display_enum {
         $crate::impl_display_enum!($ty: $($variant => $stringified),+);
     };
 
-    ($ty:ty: $($variant:ident ($($inner:ident),+) => $format:literal),+) => {
+    ($ty:ty: $($variant:ident ($($inner:tt),+) => $format:literal),+) => {
         impl ::core::fmt::Display for $ty {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 use ::core::fmt::Write as _;
@@ -191,8 +191,8 @@ macro_rules! impl_display_enum {
 
                 match self {
                     $(
-                        Self::$variant($($inner),+) =>
-                            ::core::write!(&mut buf, $format, $($inner = $inner),+)?,
+                        Self::$variant($($crate::impl_display_enum!(iou @ $inner)),+) =>
+                            ::core::write!(&mut buf, $format)?,
                     )*
                 };
 
@@ -201,7 +201,7 @@ macro_rules! impl_display_enum {
         }
     };
 
-    ($ty:ty: $($variant:ident ($($inner:ident),+) => $format:literal),+ ,) => {
+    ($ty:ty: $($variant:ident ($($inner:tt),+) => $format:literal),+ ,) => {
         $crate::impl_display_enum!($ty: $($variant ($($inner),+) => $format),+);
     };
 
@@ -217,7 +217,7 @@ macro_rules! impl_display_enum {
                 match self {
                     $(
                         Self::$variant { $($inner),+ } =>
-                            ::core::write!(&mut buf, $format, $($inner = $inner),+)?,
+                            ::core::write!(&mut buf, $format)?,
                     )*
                 };
 
@@ -229,6 +229,21 @@ macro_rules! impl_display_enum {
     ($ty:ty: $($variant:ident { $($inner:ident),+ } => $format:literal),+ ,) => {
         $crate::impl_display_enum!($ty: $($variant ($($inner),+) => $format),+);
     };
+
+    (iou @ $ident:ident) => {
+        $ident
+    };
+
+    // IDENT-or-underscore
+    (iou @ $ident:ident) => {
+        $ident
+    };
+
+    // ident-or-UNDERSCORE
+    (iou @ _) => {
+        _
+    };
+
 
     // TODO: mixed named and positional variant support
 }
@@ -283,14 +298,14 @@ mod tests {
     #[test]
     fn impl_basic_for_unit_struct() {
         struct Foo;
-        impl_display!(Foo; "foo");
+        impl_display!(Foo: "foo");
         assert_eq!(Foo.to_string(), "foo");
     }
 
     #[test]
     fn impl_basic_with_args() {
         struct Foo;
-        impl_display!(Foo; "foo {} {}", 2, 3);
+        impl_display!(Foo: "foo {} {}", 2, 3);
         assert_eq!(Foo.to_string(), "foo 2 3");
     }
 

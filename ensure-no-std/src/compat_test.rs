@@ -27,7 +27,7 @@ enum FooEnum {
     Qux,
 }
 
-impl_more::impl_display_enum!(FooEnum, Bar => "bar", Qux => "qux");
+impl_more::impl_display_enum!(FooEnum: Bar => "bar", Qux => "qux");
 
 #[derive(Debug, Clone)]
 struct Baz<T> {
@@ -39,7 +39,7 @@ impl_more::forward_display!(<T> in Baz<T> => inner);
 #[derive(Debug)]
 struct LeafErr;
 
-impl_more::impl_display!(LeafErr; "leaf");
+impl_more::impl_display!(LeafErr: "leaf");
 impl_more::impl_error_enum!(LeafErr);
 
 #[derive(Debug)]
@@ -47,5 +47,5 @@ enum Errors {
     Wrapped(LeafErr),
 }
 
-impl_more::impl_display!(Errors; "wrapped");
-impl_more::impl_error_enum!(Errors, Wrapped(err) => err);
+impl_more::impl_display!(Errors: "wrapped");
+impl_more::impl_error_enum!(Errors: Wrapped(err) => err);
