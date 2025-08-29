@@ -5,7 +5,7 @@ _list:
 check: clippy
     just --unstable --fmt --check
     nixpkgs-fmt --check .
-    fd --hidden --extension=md --extension=yml --exec-batch prettier --check
+    fd --hidden --type=file --extension=md --extension=yml --exec-batch prettier --check
     fd --hidden --extension=toml --exec-batch taplo format --check
     fd --hidden --extension=toml --exec-batch taplo lint
     cargo +nightly fmt -- --check
@@ -14,7 +14,7 @@ check: clippy
 fmt:
     just --unstable --fmt
     nixpkgs-fmt .
-    fd --hidden --extension=md --extension=yml --exec-batch prettier --write
+    fd --hidden --type=file --extension=md --extension=yml --exec-batch prettier --write
     fd --hidden --extension=toml --exec-batch taplo format
     cargo +nightly fmt
 
