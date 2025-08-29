@@ -48,8 +48,8 @@ function bump_changelog_version() {
 
     # update readme links
     if [ -f "$readme_file" ]; then
-        sed -i.bak -E "s#$current_version([/)])#$version\1#g" "$readme_file"
-        mv "${readme_file}.bak" "$readme_file"
+        sed -E "s#$current_version([/)])#$version\1#g" "$readme_file"
+        rm -f "${readme_file}.bak"
     fi
 }
 
