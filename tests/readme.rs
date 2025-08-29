@@ -38,8 +38,10 @@ enum Err {
 }
 
 impl_more::impl_display_enum!(Err, Io(err) => "{err}", Generic(msg) => "{msg}");
+#[rustversion::since(1.81)]
 impl_more::impl_error_enum!(Err, Io(err) => err);
 
+#[rustversion::since(1.81)]
 #[test]
 fn forward_error_newtype() {
     use std::error::Error as _;
@@ -54,6 +56,7 @@ fn forward_error_newtype() {
     assert_eq!(err.source().unwrap().to_string(), "something went wrong");
 }
 
+#[rustversion::since(1.81)]
 #[test]
 fn forward_error_field() {
     use std::error::Error as _;

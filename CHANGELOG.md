@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Emit `core::error::Error` in `forward_error!` and `impl_error_enum!`.
+
 ## 0.1.9
 
 - No significant changes since `0.1.8`.
