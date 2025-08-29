@@ -2,7 +2,7 @@
 
 # updates changelog version indicated by release-plz
 
-set -eEuxo pipefail
+set -eEuo pipefail
 
 ### START HELPERS
 
