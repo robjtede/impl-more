@@ -8,7 +8,7 @@
 ///
 /// For newtype struct:
 ///
-/// ```ignore # due to MSRV
+/// ```ignore
 /// use std::error::Error as _;
 ///
 /// #[derive(Debug)]
@@ -23,7 +23,7 @@
 ///
 /// For struct with named field:
 ///
-/// ```ignore # due to MSRV
+/// ```ignore
 /// use std::error::Error as _;
 ///
 /// #[derive(Debug)]
@@ -66,7 +66,7 @@ macro_rules! forward_error {
 ///
 /// # Examples
 ///
-/// ```ignore # due to MSRV
+/// ```ignore
 /// # extern crate alloc;
 /// use core::error::Error as _;
 ///
@@ -84,9 +84,55 @@ macro_rules! forward_error {
 /// assert!(Err::Generic("oops".to_owned()).source().is_none());
 /// ```
 ///
-/// Leaf errors are also supported:
+/// [`Error`]: core::error::Error
+#[macro_export]
+macro_rules! impl_error_enum {
+    ($ty:ty: $($variant:ident ($($inner:ident),+) => $source:expr),+ ,) => {
+        impl ::core::error::Error for $ty {
+            fn source(&self) -> ::core::option::Option<&(dyn ::core::error::Error + 'static)> {
+                match self {
+                    $(
+                        Self::$variant($($inner),+) => ::core::option::Option::Some($source),
+                    )*
+                    _ => ::core::option::Option::None,
+                }
+            }
+        }
+    };
+
+    ($ty:ty: $($variant:ident ($($inner:ident),+) => $source:expr),+) => {
+        $crate::impl_error_enum!($ty: $($variant ($($inner),+) => $source),+ ,);
+    };
+
+    ($ty:ty: $($variant:ident { $($inner:ident),+ } => $source:expr),+ ,) => {
+        impl ::core::error::Error for $ty {
+            fn source(&self) -> ::core::option::Option<&(dyn ::core::error::Error + 'static)> {
+                match self {
+                    $(
+                        Self::$variant($($inner),+) => ::core::option::Option::Some($source),
+                    )*
+                    _ => ::core::option::Option::None,
+                }
+            }
+        }
+    };
+
+    ($ty:ty: $($variant:ident { $($inner:ident),+ } => $source:expr),+) => {
+        $crate::impl_error_enum!($ty, $($variant { $($inner),+ } => $source),+ ,);
+    };
+
+    ($ty:ty) => {
+        impl ::core::error::Error for $ty {}
+    };
+}
+
+/// Implements leaf [`Error`]s.
 ///
-/// ```ignore # due to MSRV
+/// Emitted code is compatible with `#[no_std]` after Rust v1.81.
+///
+/// # Examples
+///
+/// ```ignore
 /// #[derive(Debug)]
 /// struct LeafError;
 ///
@@ -96,47 +142,9 @@ macro_rules! forward_error {
 ///
 /// [`Error`]: core::error::Error
 #[macro_export]
-macro_rules! impl_error_enum {
-    ($ty:ty, $($variant:ident ($($inner:ident),+) => $source:expr),+ ,) => {
-        impl ::core::error::Error for $ty {
-            fn source(&self) -> ::core::option::Option<&(dyn ::core::error::Error + 'static)> {
-                match self {
-                    $(
-                        Self::$variant($($inner),+) => ::core::option::Option::Some($source),
-                    )*
-                    _ => ::core::option::Option::None,
-                }
-            }
-        }
-    };
-
-    ($ty:ty, $($variant:ident ($($inner:ident),+) => $source:expr),+) => {
-        $crate::impl_error_enum!($ty, $($variant ($($inner),+) => $source),+ ,);
-    };
-
-    ($ty:ty, $($variant:ident { $($inner:ident),+ } => $source:expr),+ ,) => {
-        impl ::core::error::Error for $ty {
-            fn source(&self) -> ::core::option::Option<&(dyn ::core::error::Error + 'static)> {
-                match self {
-                    $(
-                        Self::$variant($($inner),+) => ::core::option::Option::Some($source),
-                    )*
-                    _ => ::core::option::Option::None,
-                }
-            }
-        }
-    };
-
-    ($ty:ty, $($variant:ident { $($inner:ident),+ } => $source:expr),+) => {
-        $crate::impl_error_enum!($ty, $($variant { $($inner),+ } => $source),+ ,);
-    };
-
-    ($ty:ty,) => {
-        impl ::core::error::Error for $ty {}
-    };
-
+macro_rules! impl_leaf_error {
     ($ty:ty) => {
-        $crate::impl_error_enum!($ty,);
+        impl ::core::error::Error for $ty {}
     };
 }
 
@@ -156,7 +164,7 @@ mod tests {
         }
 
         impl_display_enum!(Foo, Bar => "bar");
-        impl_error_enum!(Foo,);
+        impl_leaf_error!(Foo);
     }
 
     #[test]
@@ -183,13 +191,17 @@ mod tests {
             Qux(String, std::io::Error),
         }
 
-        impl_display_enum!(
+        impl_display_enum! {
             Foo,
             Bar(desc) => "{desc}",
             Baz(err) => "{err}",
             Qux(desc, err) => "{desc}: {err}"
-        );
-        impl_error_enum!(Foo, Baz(err) => err, Qux(_desc, err) => err);
+        };
+        impl_error_enum! {
+            Foo:
+            Baz(err) => err,
+            Qux(_desc, err) => err
+        };
 
         assert!(Foo::Bar(String::new()).source().is_none());
 

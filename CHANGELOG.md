@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add `impl_leaf_error!` macro.
+- Remove leaf error support from `impl_error_enum!`.
+- Change delimiter after type of `impl_error_enum!` to `:`.
 - Emit `core::error::Error` in `forward_error!` and `impl_error_enum!`.
 
 ## 0.1.9

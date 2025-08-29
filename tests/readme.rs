@@ -37,9 +37,13 @@ enum Err {
     Generic(String),
 }
 
-impl_more::impl_display_enum!(Err, Io(err) => "{err}", Generic(msg) => "{msg}");
+impl_more::impl_display_enum! {
+    Err,
+    Io(err) => "{err}",
+    Generic(msg) => "{msg}",
+}
 #[rustversion::since(1.81)]
-impl_more::impl_error_enum!(Err, Io(err) => err);
+impl_more::impl_error_enum!(Err: Io(err) => err);
 
 #[rustversion::since(1.81)]
 #[test]
