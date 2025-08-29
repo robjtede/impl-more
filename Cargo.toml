@@ -1,3 +1,17 @@
 [workspace]
-resolver = "3"
+resolver = "2"
 members = ["crates/*"]
+exclude = ["ensure-no-std"]
+
+[workspace.lints.rust]
+unsafe-code = { level = "forbid", priority = 2 }
+rust-2018-idioms = "deny"
+nonstandard-style = "deny"
+future-incompatible = "deny"
+missing-docs = { level = "warn", priority = -1 }
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

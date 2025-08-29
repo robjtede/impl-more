@@ -40,7 +40,7 @@ test-docs:
 
 # Test workspace (without generating coverage output).
 build-no-std:
-    cargo build --target=thumbv6m-none-eabi --manifest-path=./ensure-no-std/Cargo.toml
+    cargo build --target=thumbv6m-none-eabi --manifest-path=ensure-no-std/Cargo.toml
 
 # Build rustdoc.
 doc:

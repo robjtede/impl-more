@@ -49,3 +49,8 @@ enum Errors {
 
 impl_more::impl_display!(Errors: "wrapped");
 impl_more::impl_error_enum!(Errors: Wrapped(err) => err);
+
+#[derive(Debug, Clone)]
+struct Checked(bool);
+
+impl_more::impl_newtype_from_into!(Checked [<=>] bool);

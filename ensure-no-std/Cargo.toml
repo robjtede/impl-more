@@ -3,11 +3,10 @@ name = "ensure-no-std"
 publish = false
 edition = "2018"
 
-[profile.dev]
-panic = "abort"
-
-[profile.release]
-panic = "abort"
-
 [dependencies]
-impl-more = { path = ".." }
+impl-more = { path = "../crates/impl-more" }
+
+[lints.rust]
+rust-2018-idioms = "deny"
+nonstandard-style = "deny"
+future-incompatible = "deny"
