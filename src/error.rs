@@ -163,7 +163,7 @@ mod tests {
             Bar,
         }
 
-        impl_display_enum!(Foo, Bar => "bar");
+        impl_display_enum!(Foo: Bar => "bar");
         impl_leaf_error!(Foo);
     }
 
@@ -175,7 +175,7 @@ mod tests {
             Baz,
         }
 
-        impl_display_enum!(Foo, Bar => "bar", Baz => "qux");
+        impl_display_enum!(Foo: Bar => "bar", Baz => "qux");
         impl_error_enum!(Foo);
 
         assert!(Foo::Bar.source().is_none());
@@ -192,7 +192,7 @@ mod tests {
         }
 
         impl_display_enum! {
-            Foo,
+            Foo:
             Bar(desc) => "{desc}",
             Baz(err) => "{err}",
             Qux(desc, err) => "{desc}: {err}"

@@ -18,7 +18,7 @@ enum MyEnum {
     Qux,
 }
 
-impl_more::impl_display_enum!(MyEnum, Bar => "bar", Qux => "qux");
+impl_more::impl_display_enum!(MyEnum: Bar => "bar", Qux => "qux");
 
 enum Coords {
     Xy(i64, i64),
@@ -26,7 +26,7 @@ enum Coords {
 }
 
 impl_more::impl_display_enum!(
-    Coords,
+    Coords:
     Xy(x, y) => "{x}, {y}",
     Xyz(x, y, z) => "{x}, {y}, {z}",
 );
@@ -38,7 +38,7 @@ enum Err {
 }
 
 impl_more::impl_display_enum! {
-    Err,
+    Err:
     Io(err) => "{err}",
     Generic(msg) => "{msg}",
 }

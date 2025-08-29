@@ -75,7 +75,7 @@ mod tests {
             Bar,
             Qux,
         }
-        crate::impl_display_enum!(Foo, Bar => "bar", Qux => "qux");
+        crate::impl_display_enum!(Foo: Bar => "bar", Qux => "qux");
         assert_eq!(Foo::Bar.to_string(), "bar");
         assert_eq!(Foo::Qux.to_string(), "qux");
 
@@ -83,18 +83,18 @@ mod tests {
             Bar,
             Qux,
         }
-        crate::impl_display_enum!(FooComma, Bar => "bar", Qux => "qux",);
+        crate::impl_display_enum!(FooComma: Bar => "bar", Qux => "qux",);
 
         enum FooContents {
             Bar(u64, u64),
         }
-        crate::impl_display_enum!(FooContents, Bar (x, y) => "x: {x}; y: {y}");
+        crate::impl_display_enum!(FooContents: Bar (x, y) => "x: {x}; y: {y}");
         assert_eq!(FooContents::Bar(4, 2).to_string(), "x: 4; y: 2");
 
         enum FooContents2 {
             Qux { msg: &'static str },
         }
-        crate::impl_display_enum!(FooContents2, Qux { msg } => "msg: {msg}");
+        crate::impl_display_enum!(FooContents2: Qux { msg } => "msg: {msg}");
         assert_eq!(FooContents2::Qux { msg: "foo" }.to_string(), "msg: foo");
 
         // not supported yet

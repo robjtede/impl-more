@@ -145,7 +145,7 @@ macro_rules! impl_display {
 ///     Qux,
 /// }
 ///
-/// impl_display_enum!(Foo, Bar => "bar", Qux => "qux");
+/// impl_display_enum!(Foo: Bar => "bar", Qux => "qux");
 ///
 /// assert_eq!(Foo::Bar.to_string(), "bar");
 /// assert_eq!(Foo::Qux.to_string(), "qux");
@@ -155,7 +155,7 @@ macro_rules! impl_display {
 ///     Msg(&'static str),
 /// }
 ///
-/// impl_display_enum!(CoordOrMsg, Coord(x, y) => "{x}, {y}", Msg(msg) => "message: {msg}");
+/// impl_display_enum!(CoordOrMsg: Coord(x, y) => "{x}, {y}", Msg(msg) => "message: {msg}");
 ///
 /// assert_eq!(CoordOrMsg::Coord(4, 2).to_string(), "4, 2");
 /// assert_eq!(CoordOrMsg::Msg("hi").to_string(), "message: hi");
@@ -164,7 +164,7 @@ macro_rules! impl_display {
 /// [`Display`]: std::fmt::Display
 #[macro_export]
 macro_rules! impl_display_enum {
-    ($ty:ty, $($variant:ident => $stringified:literal),+) => {
+    ($ty:ty: $($variant:ident => $stringified:literal),+) => {
         impl ::core::fmt::Display for $ty {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 fmt.write_str(match self {
@@ -176,11 +176,11 @@ macro_rules! impl_display_enum {
         }
     };
 
-    ($ty:ty, $($variant:ident => $stringified:literal),+ ,) => {
-        $crate::impl_display_enum!($ty, $($variant => $stringified),+);
+    ($ty:ty: $($variant:ident => $stringified:literal),+ ,) => {
+        $crate::impl_display_enum!($ty: $($variant => $stringified),+);
     };
 
-    ($ty:ty, $($variant:ident ($($inner:ident),+) => $format:literal),+) => {
+    ($ty:ty: $($variant:ident ($($inner:ident),+) => $format:literal),+) => {
         impl ::core::fmt::Display for $ty {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 use ::core::fmt::Write as _;
@@ -201,11 +201,11 @@ macro_rules! impl_display_enum {
         }
     };
 
-    ($ty:ty, $($variant:ident ($($inner:ident),+) => $format:literal),+ ,) => {
-        $crate::impl_display_enum!($ty, $($variant ($($inner),+) => $format),+);
+    ($ty:ty: $($variant:ident ($($inner:ident),+) => $format:literal),+ ,) => {
+        $crate::impl_display_enum!($ty: $($variant ($($inner),+) => $format),+);
     };
 
-    ($ty:ty, $($variant:ident { $($inner:ident),+ } => $format:literal),+) => {
+    ($ty:ty: $($variant:ident { $($inner:ident),+ } => $format:literal),+) => {
         impl ::core::fmt::Display for $ty {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 use ::core::fmt::Write as _;
@@ -226,8 +226,8 @@ macro_rules! impl_display_enum {
         }
     };
 
-    ($ty:ty, $($variant:ident { $($inner:ident),+ } => $format:literal),+ ,) => {
-        $crate::impl_display_enum!($ty, $($variant ($($inner),+) => $format),+);
+    ($ty:ty: $($variant:ident { $($inner:ident),+ } => $format:literal),+ ,) => {
+        $crate::impl_display_enum!($ty: $($variant ($($inner),+) => $format),+);
     };
 
     // TODO: mixed named and positional variant support
