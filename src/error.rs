@@ -40,20 +40,20 @@
 ///
 /// This macro does not yet support use with generic error wrappers.
 ///
-/// [`Error`]: std::error::Error
+/// [`Error`]: core::error::Error
 #[macro_export]
 macro_rules! forward_error {
     ($ty:ty) => {
-        impl ::std::error::Error for $ty {
-            fn source(&self) -> Option<&(dyn ::std::error::Error + 'static)> {
+        impl ::core::error::Error for $ty {
+            fn source(&self) -> Option<&(dyn ::core::error::Error + 'static)> {
                 Some(::core::ops::Deref::deref(&self.0))
             }
         }
     };
 
     ($ty:ty => $field:ident) => {
-        impl ::std::error::Error for $ty {
-            fn source(&self) -> Option<&(dyn ::std::error::Error + 'static)> {
+        impl ::core::error::Error for $ty {
+            fn source(&self) -> Option<&(dyn ::core::error::Error + 'static)> {
                 Some(::core::ops::Deref::deref(&self.$field))
             }
         }
@@ -62,13 +62,13 @@ macro_rules! forward_error {
 
 /// Implements [`Error`] for enums.
 ///
-/// Emitted code is not compatible with `#[no_std]`.
+/// Emitted code is compatible with `#[no_std]` after Rust v1.81.
 ///
 /// # Examples
 ///
 /// ```
 /// # extern crate alloc;
-/// use std::error::Error as _;
+/// use core::error::Error as _;
 ///
 /// #[derive(Debug)]
 /// enum Err {
@@ -84,12 +84,22 @@ macro_rules! forward_error {
 /// assert!(Err::Generic("oops".to_owned()).source().is_none());
 /// ```
 ///
-/// [`Error`]: std::error::Error
+/// Leaf errors are also supported:
+///
+/// ```
+/// #[derive(Debug)]
+/// struct LeafError;
+///
+/// impl_more::impl_display!(LeafError; "leaf");
+/// impl_more::impl_error_enum!(LeafError);
+/// ```
+///
+/// [`Error`]: core::error::Error
 #[macro_export]
 macro_rules! impl_error_enum {
     ($ty:ty, $($variant:ident ($($inner:ident),+) => $source:expr),+ ,) => {
-        impl ::std::error::Error for $ty {
-            fn source(&self) -> ::core::option::Option<&(dyn ::std::error::Error + 'static)> {
+        impl ::core::error::Error for $ty {
+            fn source(&self) -> ::core::option::Option<&(dyn ::core::error::Error + 'static)> {
                 match self {
                     $(
                         Self::$variant($($inner),+) => ::core::option::Option::Some($source),
@@ -105,8 +115,8 @@ macro_rules! impl_error_enum {
     };
 
     ($ty:ty, $($variant:ident { $($inner:ident),+ } => $source:expr),+ ,) => {
-        impl ::std::error::Error for $ty {
-            fn source(&self) -> ::core::option::Option<&(dyn ::std::error::Error + 'static)> {
+        impl ::core::error::Error for $ty {
+            fn source(&self) -> ::core::option::Option<&(dyn ::core::error::Error + 'static)> {
                 match self {
                     $(
                         Self::$variant($($inner),+) => ::core::option::Option::Some($source),
@@ -122,7 +132,7 @@ macro_rules! impl_error_enum {
     };
 
     ($ty:ty,) => {
-        impl ::std::error::Error for $ty {}
+        impl ::core::error::Error for $ty {}
     };
 
     ($ty:ty) => {
@@ -133,7 +143,7 @@ macro_rules! impl_error_enum {
 #[cfg(test)]
 mod tests {
     use alloc::string::String;
-    use std::error::Error as _;
+    use core::error::Error as _;
 
     #[test]
     fn with_trailing_comma() {
