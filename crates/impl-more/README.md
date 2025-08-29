@@ -5,7 +5,7 @@
 <!-- prettier-ignore-start -->
 
 [![crates.io](https://img.shields.io/crates/v/impl-more?label=latest)](https://crates.io/crates/impl-more)
-[![Documentation](https://docs.rs/impl-more/badge.svg)](https://docs.rs/impl-more/0.3.0)
+[![Documentation](https://docs.rs/impl-more/badge.svg?version=0.3.0)](https://docs.rs/impl-more/0.3.0)
 ![MIT or Apache 2.0 licensed](https://img.shields.io/crates/l/impl-more.svg)
 <br />
 [![dependency status](https://deps.rs/crate/impl-more/0.3.0/status.svg)](https://deps.rs/crate/impl-more/0.3.0)
