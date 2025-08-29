@@ -1,6 +1,6 @@
 [package]
 name = "impl-more"
-version = "0.1.9"
+version = "0.2.0"
 description = "Concise, declarative trait implementation macros"
 authors = ["Rob Ede <robjtede@icloud.com>"]
 keywords = ["derive", "implement", "implementations", "no-std"]

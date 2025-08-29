@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.2.0
+
 - Add `impl_leaf_error!` macro.
 - Allow `impl_display_enum!` to omit variant's bindings.
 - Remove leaf error support from `impl_error_enum!`.
