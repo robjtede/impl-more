@@ -44,7 +44,7 @@ jobs:
           target: thumbv6m-none-eabi
 
       - name: Install just,nextest
-        uses: taiki-e/install-action@v2.70.4
+        uses: taiki-e/install-action@v2.75.27
         with:
           tool: just,nextest
 
@@ -75,7 +75,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1.15.4
 
       - name: Install just
-        uses: taiki-e/install-action@v2.70.4
+        uses: taiki-e/install-action@v2.75.27
         with:
           tool: just
 
