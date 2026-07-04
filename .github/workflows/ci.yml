@@ -18,7 +18,7 @@ concurrency:
 jobs:
   read_msrv:
     name: Read MSRV
-    uses: actions-rust-lang/msrv/.github/workflows/msrv.yml@v0.1.1
+    uses: actions-rust-lang/msrv/.github/workflows/msrv.yml@b95a3a81b0efee6438b858b41a84aff627e01351 # v0.1.1
 
   test:
     needs: read_msrv
@@ -35,16 +35,16 @@ jobs:
     name: Test / ${{ matrix.toolchain.name }}
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Install Rust (${{ matrix.toolchain.name }})
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1.17.0
         with:
           toolchain: ${{ matrix.toolchain.version }}
           target: thumbv6m-none-eabi
 
       - name: Install just,nextest
-        uses: taiki-e/install-action@v2.82.7
+        uses: taiki-e/install-action@16b05812d776ae1dfaabc8277e421fb6d2506419 # v2.82.7
         with:
           tool: just,nextest
 
@@ -69,13 +69,13 @@ jobs:
     name: Clippy
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Install Rust (stable)
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1.17.0
 
       - name: Install just
-        uses: taiki-e/install-action@v2.82.7
+        uses: taiki-e/install-action@16b05812d776ae1dfaabc8277e421fb6d2506419 # v2.82.7
         with:
           tool: just
 
