@@ -109,7 +109,7 @@ macro_rules! impl_error_enum {
             fn source(&self) -> ::core::option::Option<&(dyn ::core::error::Error + 'static)> {
                 match self {
                     $(
-                        Self::$variant($($inner),+) => ::core::option::Option::Some($source),
+                        Self::$variant { $($inner),+ } => ::core::option::Option::Some($source),
                     )*
                     _ => ::core::option::Option::None,
                 }
@@ -118,7 +118,7 @@ macro_rules! impl_error_enum {
     };
 
     ($ty:ty: $($variant:ident { $($inner:ident),+ } => $source:expr),+) => {
-        $crate::impl_error_enum!($ty, $($variant { $($inner),+ } => $source),+ ,);
+        $crate::impl_error_enum!($ty: $($variant { $($inner),+ } => $source),+ ,);
     };
 
     ($ty:ty) => {
@@ -179,6 +179,38 @@ mod tests {
         impl_error_enum!(Foo);
 
         assert!(Foo::Bar.source().is_none());
+        assert!(Foo::Baz.source().is_none());
+    }
+
+    #[test]
+    fn named_variant() {
+        #[derive(Debug)]
+        enum Foo {
+            Bar { source: std::io::Error },
+            Baz,
+        }
+
+        impl_display!(Foo: "foo");
+        impl_error_enum!(Foo: Bar { source } => source);
+
+        let io_err = std::io::Error::new(std::io::ErrorKind::Other, "test");
+        assert!(Foo::Bar { source: io_err }.source().is_some());
+        assert!(Foo::Baz.source().is_none());
+    }
+
+    #[test]
+    fn named_variant_with_trailing_comma() {
+        #[derive(Debug)]
+        enum Foo {
+            Bar { source: std::io::Error },
+            Baz,
+        }
+
+        impl_display!(Foo: "foo");
+        impl_error_enum!(Foo: Bar { source } => source,);
+
+        let io_err = std::io::Error::new(std::io::ErrorKind::Other, "test");
+        assert!(Foo::Bar { source: io_err }.source().is_some());
         assert!(Foo::Baz.source().is_none());
     }
 
