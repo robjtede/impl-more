@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.2
+
 - Fix `impl_display_enum!` trailing comma handling for variants with named fields.
 - Fix `impl_error_enum!` support for variants with named fields.
 
