@@ -227,7 +227,7 @@ macro_rules! impl_display_enum {
     };
 
     ($ty:ty: $($variant:ident { $($inner:ident),+ } => $format:literal),+ ,) => {
-        $crate::impl_display_enum!($ty: $($variant ($($inner),+) => $format),+);
+        $crate::impl_display_enum!($ty: $($variant { $($inner),+ } => $format),+);
     };
 
     (iou @ $ident:ident) => {
@@ -316,5 +316,16 @@ mod tests {
         struct Hello3;
         impl_display!(Hello3: "{HI} world");
         assert_eq!(Hello3.to_string(), "hello world");
+    }
+
+    #[test]
+    fn impl_enum_named_variant_with_trailing_comma() {
+        enum Foo {
+            Bar { value: u64 },
+        }
+
+        impl_display_enum!(Foo: Bar { value } => "{value}",);
+
+        assert_eq!(Foo::Bar { value: 42 }.to_string(), "42");
     }
 }
