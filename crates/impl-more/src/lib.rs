@@ -12,6 +12,8 @@
 //!
 //! impl_more::impl_as_ref!(MyNewTypeStruct => String);
 //! impl_more::impl_as_mut!(MyNewTypeStruct => String);
+//! impl_more::forward_as_ref!(MyNewTypeStruct => str);
+//! impl_more::forward_as_mut!(MyNewTypeStruct => str);
 //!
 //! impl_more::impl_deref!(MyNewTypeStruct => String);
 //! impl_more::impl_deref_mut!(MyNewTypeStruct);
