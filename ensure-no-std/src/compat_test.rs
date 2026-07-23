@@ -13,9 +13,9 @@ impl_more::impl_deref_mut!(Foo);
 
 impl_more::impl_from!(String => Foo);
 impl_more::impl_into!(Foo => String);
-impl_more::forward_from_str!(Foo => String);
 
 impl_more::forward_display!(Foo);
+impl_more::forward_from_str!(Foo => String);
 
 #[derive(Debug, Clone)]
 struct Bar {
@@ -38,8 +38,8 @@ struct Baz<T> {
     inner: T,
 }
 
-impl_more::forward_from_str!(<T> in Baz<T> => inner: T);
 impl_more::forward_display!(<T> in Baz<T> => inner);
+impl_more::forward_from_str!(<T> in Baz<T> => inner: T);
 
 #[derive(Debug, Clone)]
 struct Qux<T>(Vec<T>);
