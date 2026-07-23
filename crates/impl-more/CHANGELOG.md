@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `forward_as_ref!`, `forward_as_mut!`, and `forward_as_ref_and_mut!` macros.
+
 ## 0.3.3
 
 - No significant changes since `0.3.2`.
