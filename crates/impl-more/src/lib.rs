@@ -5,7 +5,7 @@
 //! Where possible, these macros emit `#[no_std]`-compatible code.
 
 #![cfg_attr(not(docsrs), no_std)]
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[cfg(test)]
 extern crate alloc;

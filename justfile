@@ -44,5 +44,5 @@ build-no-std:
 
 # Build rustdoc.
 doc:
-    rm "$(cargo metadata --format-version=1 | jq -r '.target_directory')/doc/crates.js"
+    - rm -f "$(cargo metadata --format-version=1 | jq -r '.target_directory')/doc/crates.js"
     RUSTDOCFLAGS="--cfg=docsrs -Dwarnings" cargo +nightly doc --workspace --no-deps --all-features
