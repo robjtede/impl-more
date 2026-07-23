@@ -3,10 +3,10 @@
 <!-- prettier-ignore-start -->
 
 [![crates.io](https://img.shields.io/crates/v/impl-more?label=latest)](https://crates.io/crates/impl-more)
-[![Documentation](https://docs.rs/impl-more/badge.svg?version=0.3.2)](https://docs.rs/impl-more/0.3.2)
+[![Documentation](https://docs.rs/impl-more/badge.svg?version=0.3.3)](https://docs.rs/impl-more/0.3.3)
 ![MIT or Apache 2.0 licensed](https://img.shields.io/crates/l/impl-more.svg)
 <br />
-[![dependency status](https://deps.rs/crate/impl-more/0.3.2/status.svg)](https://deps.rs/crate/impl-more/0.3.2)
+[![dependency status](https://deps.rs/crate/impl-more/0.3.3/status.svg)](https://deps.rs/crate/impl-more/0.3.3)
 [![Download](https://img.shields.io/crates/d/impl-more.svg)](https://crates.io/crates/impl-more)
 [![CI](https://github.com/robjtede/impl-more/actions/workflows/ci.yml/badge.svg)](https://github.com/robjtede/impl-more/actions/workflows/ci.yml)
 
