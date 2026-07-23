@@ -5,18 +5,23 @@ _list:
 check: clippy
     just --unstable --fmt --check
     nixpkgs-fmt --check .
+    cd ./crates/impl-more && cargo rdme --check
     fd --hidden --type=file --extension=md --extension=yml --exec-batch prettier --check
     fd --hidden --extension=toml --exec-batch taplo format --check
     fd --hidden --extension=toml --exec-batch taplo lint
     cargo +nightly fmt -- --check
 
 # Format project.
-fmt:
+fmt: update-readmes
     just --unstable --fmt
     nixpkgs-fmt .
     fd --hidden --type=file --extension=md --extension=yml --exec-batch prettier --write
     fd --hidden --extension=toml --exec-batch taplo format
     cargo +nightly fmt
+
+# Update README from crate root documentation.
+update-readmes:
+    cd ./crates/impl-more && cargo rdme --force
 
 # Lint workspace with Clippy.
 clippy:

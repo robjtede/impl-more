@@ -19,6 +19,7 @@
           packages = [
             config.formatter
             inputs'.x52.packages.x52-release-tools
+            pkgs.cargo-rdme
             pkgs.fd
             pkgs.just
             pkgs.nodePackages.prettier
