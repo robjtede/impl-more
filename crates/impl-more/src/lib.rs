@@ -23,6 +23,9 @@
 //! impl_more::impl_from!(String => MyNewTypeStruct);
 //! impl_more::impl_into!(MyNewTypeStruct => String);
 //!
+//! impl_more::forward_display!(MyNewTypeStruct);
+//! impl_more::forward_from_str!(MyNewTypeStruct => String);
+//!
 //! enum MyEnum {
 //!     Bar,
 //!     Qux,
@@ -100,6 +103,8 @@ mod display;
 mod error;
 #[macro_use]
 mod from;
+#[macro_use]
+mod from_str;
 
 #[cfg(test)]
 mod tests {
