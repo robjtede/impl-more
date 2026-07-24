@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.5
+
 - Add `forward_from_str!` macro.
 
 ## 0.3.4
