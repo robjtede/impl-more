@@ -15,6 +15,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   read_msrv:
     name: Read MSRV
@@ -45,10 +48,18 @@ jobs:
           toolchain: ${{ matrix.toolchain.version }}
           target: thumbv6m-none-eabi
 
-      - name: Install just,nextest
+      - name: Install just, nextest, cargo-ci-cache-clean
         uses: taiki-e/install-action@b6ff580856c41316412a0b9b60540fbc6f8c82cc # v2.86.7
         with:
-          tool: just,nextest
+          tool: just,nextest,cargo-ci-cache-clean
+
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
+
+      - name: Enter Nix devshell
+        uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
+        with:
+          arguments: .#ci
 
       - name: Workaround MSRV issues
         if: matrix.toolchain.name == 'msrv'
@@ -65,37 +76,5 @@ jobs:
         if: matrix.toolchain.name == 'stable'
         run: just build-no-std
 
-  clippy:
-    runs-on: ubuntu-latest
-
-    name: Clippy
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Install Rust (stable)
-        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1.17.0
-
-      - name: Install just
-        uses: taiki-e/install-action@b6ff580856c41316412a0b9b60540fbc6f8c82cc # v2.86.7
-        with:
-          tool: just
-
-      - name: Check with Clippy
-        run: just clippy
-
-  zizmor:
-    name: GitHub Actions Security
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
-        with:
-          advanced-security: false
-          annotations: true
+      - name: CI cache clean
+        run: cargo-ci-cache-clean

@@ -1,5 +1,9 @@
+import '.toolchain/rust.just'
+
 _list:
     @just --list
+
+toolchain := ""
 
 # Check project.
 check: clippy
@@ -24,9 +28,9 @@ update-readmes:
     cd ./crates/impl-more && cargo rdme --force
 
 # Lint workspace with Clippy.
-clippy:
-    cargo clippy --workspace --no-default-features
-    cargo clippy --workspace --all-features
+clippy toolchain="":
+    cargo {{ toolchain }} clippy --workspace --no-default-features
+    cargo {{ toolchain }} clippy --workspace --all-features
 
 # Downgrade dependencies required to testing using MSRV.
 downgrade-msrv:
@@ -36,12 +40,20 @@ downgrade-msrv:
 test: test-no-coverage build-no-std
 
 # Test workspace (without generating coverage output).
-test-no-coverage:
-    cargo nextest run --workspace --all-targets --all-features
+test-no-coverage toolchain="":
+    cargo {{ toolchain }} nextest run --workspace --all-targets --all-features
 
 # Test docs.
-test-docs:
-    cargo test --doc --workspace --all-features
+test-docs toolchain="":
+    cargo {{ toolchain }} test --doc --workspace --all-features
+
+# Test workspace and generate Codecov coverage file.
+test-coverage-codecov toolchain="":
+    cargo {{ toolchain }} llvm-cov --workspace --all-features --codecov --output-path codecov.json
+
+# Test workspace and generate LCOV coverage file.
+test-coverage-lcov toolchain="":
+    cargo {{ toolchain }} llvm-cov --workspace --all-features --lcov --output-path lcov.info
 
 # Test workspace (without generating coverage output).
 build-no-std:

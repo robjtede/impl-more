@@ -4,15 +4,17 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write
-  pull-requests: write
-  id-token: write
+permissions: {}
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'robjtede' }}
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -34,19 +36,15 @@ jobs:
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
         id: release-plz
 
-      - name: Install Determinate Nix
+      - name: Install Nix
         if: ${{ steps.release-plz.outputs.prs_created == 'true' || steps.release-plz.outputs.releases_created == 'true' }}
-        uses: DeterminateSystems/determinate-nix-action@527f17dd63d2d60d3e5552934bc84b9a33a14d11 # v3.22.2
-        with:
-          extra-conf: lazy-trees = true
-
-      - name: Set up FlakeHub Cache
-        if: ${{ steps.release-plz.outputs.prs_created == 'true' || steps.release-plz.outputs.releases_created == 'true' }}
-        uses: DeterminateSystems/flakehub-cache-action@83293488abfd33fbfb2ab084097467491c029962 # v3.22.2
+        uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
 
       - name: Enter Nix devshell
         if: ${{ steps.release-plz.outputs.prs_created == 'true' || steps.release-plz.outputs.releases_created == 'true' }}
         uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
+        with:
+          arguments: .#ci-release
 
       - name: Bump changelog versions
         if: ${{ steps.release-plz.outputs.prs_created == 'true' }}
