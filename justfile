@@ -47,14 +47,6 @@ test-no-coverage toolchain="":
 test-docs toolchain="":
     cargo {{ toolchain }} test --doc --workspace --all-features
 
-# Test workspace and generate Codecov coverage file.
-test-coverage-codecov toolchain="":
-    cargo {{ toolchain }} llvm-cov --workspace --all-features --codecov --output-path codecov.json
-
-# Test workspace and generate LCOV coverage file.
-test-coverage-lcov toolchain="":
-    cargo {{ toolchain }} llvm-cov --workspace --all-features --lcov --output-path lcov.info
-
 # Test workspace (without generating coverage output).
 build-no-std:
     cargo build --target=thumbv6m-none-eabi --manifest-path=ensure-no-std/Cargo.toml

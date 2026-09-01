@@ -6,7 +6,3 @@ target/
 
 /.direnv
 /.toolchain/
-
-# code coverage
-/codecov.json
-/lcov.info

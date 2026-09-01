@@ -41,7 +41,7 @@
 /// assert_eq!(Baz(42u64).to_string(), "42");
 /// ```
 ///
-/// [`Display`]: std::fmt::Display
+/// [`Display`]: core::fmt::Display
 #[macro_export]
 macro_rules! forward_display {
     (<$($generic:ident),+> in $this:ty => $field:ident) => {
@@ -105,7 +105,7 @@ macro_rules! forward_display {
 /// assert_eq!(Hello3.to_string(), "hello world");
 /// ```
 ///
-/// [`Display`]: std::fmt::Display
+/// [`Display`]: core::fmt::Display
 #[macro_export]
 macro_rules! impl_display {
     // no format args
@@ -161,7 +161,7 @@ macro_rules! impl_display {
 /// assert_eq!(CoordOrMsg::Msg("hi").to_string(), "message: hi");
 /// ```
 ///
-/// [`Display`]: std::fmt::Display
+/// [`Display`]: core::fmt::Display
 #[macro_export]
 macro_rules! impl_display_enum {
     ($ty:ty: $($variant:ident => $stringified:literal),+) => {
