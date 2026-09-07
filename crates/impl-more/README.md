@@ -47,6 +47,12 @@ impl_more::forward_into_iterator!(<T> in Items<T> => Vec<T>; owned, ref, ref_mut
 impl_more::forward_from_iterator!(<T> in Items<T> => Vec<T>);
 impl_more::forward_extend!(<T> in Items<T> => Vec<T>);
 
+struct Mask(u32);
+
+impl_more::forward_debug!(Mask);
+impl_more::forward_lower_hex!(Mask);
+impl_more::forward_binary!(Mask);
+
 enum MyEnum {
     Bar,
     Qux,
