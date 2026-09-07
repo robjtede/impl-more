@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.6
+
 - Add `forward_into_iterator!`, `forward_from_iterator!`, and `forward_extend!` macros for collection wrappers.
 - Add `forward_debug!`, `forward_binary!`, `forward_octal!`, `forward_lower_hex!`, `forward_upper_hex!`, `forward_lower_exp!`, `forward_upper_exp!`, and `forward_pointer!` macros.
 
