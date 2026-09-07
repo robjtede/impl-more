@@ -32,6 +32,23 @@
 ///     "42",
 /// );
 /// ```
+///
+/// Select a named field with `=> field`:
+///
+/// ```
+/// struct Value {
+///     inner: u32,
+/// }
+///
+/// impl_more::forward_debug!(Value => inner);
+///
+/// let value = Value { inner: 42 };
+///
+/// assert_eq!(
+///     format!("{:?}", value),
+///     "42",
+/// );
+/// ```
 #[macro_export]
 macro_rules! forward_debug {
     (<$($generic:ident),+> in $this:ty => $field:tt $(,)?) => {
@@ -95,6 +112,23 @@ macro_rules! forward_debug {
 ///
 /// assert_eq!(
 ///     format!("{:b}", Value(inner)),
+///     "101010",
+/// );
+/// ```
+///
+/// Select a named field with `=> field`:
+///
+/// ```
+/// struct Value {
+///     inner: u32,
+/// }
+///
+/// impl_more::forward_binary!(Value => inner);
+///
+/// let value = Value { inner: 42 };
+///
+/// assert_eq!(
+///     format!("{:b}", value),
 ///     "101010",
 /// );
 /// ```
@@ -164,6 +198,23 @@ macro_rules! forward_binary {
 ///     "52",
 /// );
 /// ```
+///
+/// Select a named field with `=> field`:
+///
+/// ```
+/// struct Value {
+///     inner: u32,
+/// }
+///
+/// impl_more::forward_octal!(Value => inner);
+///
+/// let value = Value { inner: 42 };
+///
+/// assert_eq!(
+///     format!("{:o}", value),
+///     "52",
+/// );
+/// ```
 #[macro_export]
 macro_rules! forward_octal {
     (<$($generic:ident),+> in $this:ty => $field:tt $(,)?) => {
@@ -227,6 +278,23 @@ macro_rules! forward_octal {
 ///
 /// assert_eq!(
 ///     format!("{:x}", Value(inner)),
+///     "2a",
+/// );
+/// ```
+///
+/// Select a named field with `=> field`:
+///
+/// ```
+/// struct Value {
+///     inner: u32,
+/// }
+///
+/// impl_more::forward_lower_hex!(Value => inner);
+///
+/// let value = Value { inner: 42 };
+///
+/// assert_eq!(
+///     format!("{:x}", value),
 ///     "2a",
 /// );
 /// ```
@@ -296,6 +364,23 @@ macro_rules! forward_lower_hex {
 ///     "2A",
 /// );
 /// ```
+///
+/// Select a named field with `=> field`:
+///
+/// ```
+/// struct Value {
+///     inner: u32,
+/// }
+///
+/// impl_more::forward_upper_hex!(Value => inner);
+///
+/// let value = Value { inner: 42 };
+///
+/// assert_eq!(
+///     format!("{:X}", value),
+///     "2A",
+/// );
+/// ```
 #[macro_export]
 macro_rules! forward_upper_hex {
     (<$($generic:ident),+> in $this:ty => $field:tt $(,)?) => {
@@ -359,6 +444,23 @@ macro_rules! forward_upper_hex {
 ///
 /// assert_eq!(
 ///     format!("{:e}", Value(inner)),
+///     "4.2e1",
+/// );
+/// ```
+///
+/// Select a named field with `=> field`:
+///
+/// ```
+/// struct Value {
+///     inner: u32,
+/// }
+///
+/// impl_more::forward_lower_exp!(Value => inner);
+///
+/// let value = Value { inner: 42 };
+///
+/// assert_eq!(
+///     format!("{:e}", value),
 ///     "4.2e1",
 /// );
 /// ```
@@ -428,6 +530,23 @@ macro_rules! forward_lower_exp {
 ///     "4.2E1",
 /// );
 /// ```
+///
+/// Select a named field with `=> field`:
+///
+/// ```
+/// struct Value {
+///     inner: u32,
+/// }
+///
+/// impl_more::forward_upper_exp!(Value => inner);
+///
+/// let value = Value { inner: 42 };
+///
+/// assert_eq!(
+///     format!("{:E}", value),
+///     "4.2E1",
+/// );
+/// ```
 #[macro_export]
 macro_rules! forward_upper_exp {
     (<$($generic:ident),+> in $this:ty => $field:tt $(,)?) => {
@@ -491,6 +610,23 @@ macro_rules! forward_upper_exp {
 ///
 /// assert_eq!(
 ///     format!("{:p}", Value(inner)),
+///     "0x0",
+/// );
+/// ```
+///
+/// Select a named field with `=> field`:
+///
+/// ```
+/// struct Value {
+///     inner: *const i32,
+/// }
+///
+/// impl_more::forward_pointer!(Value => inner);
+///
+/// let value = Value { inner: core::ptr::null() };
+///
+/// assert_eq!(
+///     format!("{:p}", value),
 ///     "0x0",
 /// );
 /// ```
