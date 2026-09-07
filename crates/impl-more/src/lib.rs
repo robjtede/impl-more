@@ -26,6 +26,12 @@
 //! impl_more::forward_display!(MyNewTypeStruct);
 //! impl_more::forward_from_str!(MyNewTypeStruct => String);
 //!
+//! struct Items<T>(Vec<T>);
+//!
+//! impl_more::forward_into_iterator!(<T> in Items<T> => Vec<T>; owned, ref, ref_mut);
+//! impl_more::forward_from_iterator!(<T> in Items<T> => Vec<T>);
+//! impl_more::forward_extend!(<T> in Items<T> => Vec<T>);
+//!
 //! enum MyEnum {
 //!     Bar,
 //!     Qux,
