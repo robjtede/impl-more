@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `forward_into_iterator!`, `forward_from_iterator!`, and `forward_extend!` macros for collection wrappers.
+
 ## 0.3.5
 
 - Add `forward_from_str!` macro.
