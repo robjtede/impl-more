@@ -12,7 +12,10 @@
 ///
 /// let inner = 42u32;
 ///
-/// assert_eq!(format!("{:?}", Value(inner)), format!("{:?}", inner));
+/// assert_eq!(
+///     format!("{:?}", Value(inner)),
+///     "42",
+/// );
 /// ```
 #[macro_export]
 macro_rules! forward_debug {
@@ -60,7 +63,10 @@ macro_rules! forward_debug {
 ///
 /// let inner = 42u32;
 ///
-/// assert_eq!(format!("{:b}", Value(inner)), format!("{:b}", inner));
+/// assert_eq!(
+///     format!("{:b}", Value(inner)),
+///     "101010",
+/// );
 /// ```
 #[macro_export]
 macro_rules! forward_binary {
@@ -108,7 +114,10 @@ macro_rules! forward_binary {
 ///
 /// let inner = 42u32;
 ///
-/// assert_eq!(format!("{:o}", Value(inner)), format!("{:o}", inner));
+/// assert_eq!(
+///     format!("{:o}", Value(inner)),
+///     "52",
+/// );
 /// ```
 #[macro_export]
 macro_rules! forward_octal {
@@ -156,7 +165,10 @@ macro_rules! forward_octal {
 ///
 /// let inner = 42u32;
 ///
-/// assert_eq!(format!("{:x}", Value(inner)), format!("{:x}", inner));
+/// assert_eq!(
+///     format!("{:x}", Value(inner)),
+///     "2a",
+/// );
 /// ```
 #[macro_export]
 macro_rules! forward_lower_hex {
@@ -204,7 +216,10 @@ macro_rules! forward_lower_hex {
 ///
 /// let inner = 42u32;
 ///
-/// assert_eq!(format!("{:X}", Value(inner)), format!("{:X}", inner));
+/// assert_eq!(
+///     format!("{:X}", Value(inner)),
+///     "2A",
+/// );
 /// ```
 #[macro_export]
 macro_rules! forward_upper_hex {
@@ -252,7 +267,10 @@ macro_rules! forward_upper_hex {
 ///
 /// let inner = 42u32;
 ///
-/// assert_eq!(format!("{:e}", Value(inner)), format!("{:e}", inner));
+/// assert_eq!(
+///     format!("{:e}", Value(inner)),
+///     "4.2e1",
+/// );
 /// ```
 #[macro_export]
 macro_rules! forward_lower_exp {
@@ -300,7 +318,10 @@ macro_rules! forward_lower_exp {
 ///
 /// let inner = 42u32;
 ///
-/// assert_eq!(format!("{:E}", Value(inner)), format!("{:E}", inner));
+/// assert_eq!(
+///     format!("{:E}", Value(inner)),
+///     "4.2E1",
+/// );
 /// ```
 #[macro_export]
 macro_rules! forward_upper_exp {
@@ -346,9 +367,12 @@ macro_rules! forward_upper_exp {
 ///
 /// impl_more::forward_pointer!(<T> in Value<T>);
 ///
-/// let inner = &42 as *const i32;
+/// let inner = core::ptr::null::<i32>();
 ///
-/// assert_eq!(format!("{:p}", Value(inner)), format!("{:p}", inner));
+/// assert_eq!(
+///     format!("{:p}", Value(inner)),
+///     "0x0",
+/// );
 /// ```
 #[macro_export]
 macro_rules! forward_pointer {

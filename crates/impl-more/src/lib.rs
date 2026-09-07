@@ -8,7 +8,10 @@
 //! impl_more::forward_debug!(Mask);
 //! impl_more::forward_lower_hex!(Mask);
 //!
-//! assert_eq!(format!("{:#06x}", Mask(42)), "0x002a");
+//! assert_eq!(
+//!     format!("{:#06x}", Mask(42)),
+//!     "0x002a",
+//! );
 //! ```
 //!
 //! # `#[no_std]`
