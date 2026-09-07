@@ -64,3 +64,7 @@ impl_more::impl_error_enum!(Errors: Wrapped(err) => err);
 struct Checked(bool);
 
 impl_more::impl_newtype_from_into!(Checked [<=>] bool);
+
+impl_more::forward_into_iterator!(<T> in Qux<T> => Vec<T>; owned, ref, ref_mut);
+impl_more::forward_from_iterator!(<T> in Qux<T> => Vec<T>);
+impl_more::forward_extend!(<T> in Qux<T> => Vec<T>);
