@@ -20,11 +20,14 @@ Forward collection traits to an inner collection:
 
 ```rust
 struct Items<T>(Vec<T>);
+
 impl_more::forward_into_iterator!(<T> in Items<T> => Vec<T>; owned, ref, ref_mut);
 impl_more::forward_from_iterator!(<T> in Items<T> => Vec<T>);
 impl_more::forward_extend!(<T> in Items<T> => Vec<T>);
+
 let mut items = (0..2).collect::<Items<_>>();
 items.extend([2]);
+
 assert_eq!(items.into_iter().collect::<Vec<_>>(), vec![0, 1, 2]);
 ```
 

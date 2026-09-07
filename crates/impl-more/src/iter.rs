@@ -8,9 +8,12 @@
 ///
 /// ```
 /// struct Items<T>(Vec<T>);
+///
 /// impl_more::forward_into_iterator!(<T> in Items<T> => Vec<T>; owned, ref, ref_mut);
+///
 /// let mut items = Items(vec![1, 2]);
 /// for item in &mut items { *item += 1; }
+///
 /// assert_eq!((&items).into_iter().copied().collect::<Vec<_>>(), vec![2, 3]);
 /// assert_eq!(items.into_iter().collect::<Vec<_>>(), vec![2, 3]);
 /// ```
@@ -19,7 +22,9 @@
 ///
 /// ```
 /// struct Items { values: Vec<u8> }
+///
 /// impl_more::forward_into_iterator!(Items => values: Vec<u8>; ref);
+///
 /// assert_eq!((&Items { values: vec![1] }).into_iter().next(), Some(&1));
 /// ```
 #[macro_export]
@@ -95,15 +100,21 @@ macro_rules! forward_into_iterator {
 ///
 /// ```
 /// struct Items<T>(Vec<T>);
+///
 /// impl_more::forward_from_iterator!(<T> in Items<T> => Vec<T>);
+///
 /// let items = (1..4).collect::<Items<_>>();
+///
 /// assert_eq!(items.0, vec![1, 2, 3]);
 /// ```
 ///
 /// ```
 /// struct Text { value: String }
+///
 /// impl_more::forward_from_iterator!(Text => value: String);
+///
 /// let text = ["hello", " world"].iter().copied().collect::<Text>();
+///
 /// assert_eq!(text.value, "hello world");
 /// ```
 #[macro_export]
@@ -141,17 +152,23 @@ macro_rules! forward_from_iterator {
 ///
 /// ```
 /// struct Items<T>(Vec<T>);
+///
 /// impl_more::forward_extend!(<T> in Items<T> => Vec<T>);
+///
 /// let mut items = Items(vec![1]);
 /// items.extend([2, 3]);
+///
 /// assert_eq!(items.0, vec![1, 2, 3]);
 /// ```
 ///
 /// ```
 /// struct Text { value: String }
+///
 /// impl_more::forward_extend!(Text => value: String);
+///
 /// let mut text = Text { value: String::new() };
 /// text.extend(["hello", " world"]);
+///
 /// assert_eq!(text.value, "hello world");
 /// ```
 #[macro_export]
