@@ -5,6 +5,21 @@
 ///
 /// # Examples
 ///
+/// With a newtype struct:
+///
+/// ```
+/// struct Value(u32);
+///
+/// impl_more::forward_debug!(Value);
+///
+/// assert_eq!(
+///     format!("{:?}", Value(42)),
+///     "42",
+/// );
+/// ```
+///
+/// With a generic newtype struct:
+///
 /// ```
 /// struct Value<T>(T);
 ///
@@ -55,6 +70,21 @@ macro_rules! forward_debug {
 /// Omit the field for a tuple newtype. All type parameters receive a `Binary` bound.
 ///
 /// # Examples
+///
+/// With a newtype struct:
+///
+/// ```
+/// struct Value(u32);
+///
+/// impl_more::forward_binary!(Value);
+///
+/// assert_eq!(
+///     format!("{:b}", Value(42)),
+///     "101010",
+/// );
+/// ```
+///
+/// With a generic newtype struct:
 ///
 /// ```
 /// struct Value<T>(T);
@@ -107,6 +137,21 @@ macro_rules! forward_binary {
 ///
 /// # Examples
 ///
+/// With a newtype struct:
+///
+/// ```
+/// struct Value(u32);
+///
+/// impl_more::forward_octal!(Value);
+///
+/// assert_eq!(
+///     format!("{:o}", Value(42)),
+///     "52",
+/// );
+/// ```
+///
+/// With a generic newtype struct:
+///
 /// ```
 /// struct Value<T>(T);
 ///
@@ -157,6 +202,21 @@ macro_rules! forward_octal {
 /// Omit the field for a tuple newtype. All type parameters receive a `LowerHex` bound.
 ///
 /// # Examples
+///
+/// With a newtype struct:
+///
+/// ```
+/// struct Value(u32);
+///
+/// impl_more::forward_lower_hex!(Value);
+///
+/// assert_eq!(
+///     format!("{:x}", Value(42)),
+///     "2a",
+/// );
+/// ```
+///
+/// With a generic newtype struct:
 ///
 /// ```
 /// struct Value<T>(T);
@@ -209,6 +269,21 @@ macro_rules! forward_lower_hex {
 ///
 /// # Examples
 ///
+/// With a newtype struct:
+///
+/// ```
+/// struct Value(u32);
+///
+/// impl_more::forward_upper_hex!(Value);
+///
+/// assert_eq!(
+///     format!("{:X}", Value(42)),
+///     "2A",
+/// );
+/// ```
+///
+/// With a generic newtype struct:
+///
 /// ```
 /// struct Value<T>(T);
 ///
@@ -259,6 +334,21 @@ macro_rules! forward_upper_hex {
 /// Omit the field for a tuple newtype. All type parameters receive a `LowerExp` bound.
 ///
 /// # Examples
+///
+/// With a newtype struct:
+///
+/// ```
+/// struct Value(u32);
+///
+/// impl_more::forward_lower_exp!(Value);
+///
+/// assert_eq!(
+///     format!("{:e}", Value(42)),
+///     "4.2e1",
+/// );
+/// ```
+///
+/// With a generic newtype struct:
 ///
 /// ```
 /// struct Value<T>(T);
@@ -311,6 +401,21 @@ macro_rules! forward_lower_exp {
 ///
 /// # Examples
 ///
+/// With a newtype struct:
+///
+/// ```
+/// struct Value(u32);
+///
+/// impl_more::forward_upper_exp!(Value);
+///
+/// assert_eq!(
+///     format!("{:E}", Value(42)),
+///     "4.2E1",
+/// );
+/// ```
+///
+/// With a generic newtype struct:
+///
 /// ```
 /// struct Value<T>(T);
 ///
@@ -361,6 +466,21 @@ macro_rules! forward_upper_exp {
 /// Omit the field for a tuple newtype. All type parameters receive a `Pointer` bound.
 ///
 /// # Examples
+///
+/// With a newtype struct:
+///
+/// ```
+/// struct Value(*const i32);
+///
+/// impl_more::forward_pointer!(Value);
+///
+/// assert_eq!(
+///     format!("{:p}", Value(core::ptr::null())),
+///     "0x0",
+/// );
+/// ```
+///
+/// With a generic newtype struct:
 ///
 /// ```
 /// struct Value<T>(T);
