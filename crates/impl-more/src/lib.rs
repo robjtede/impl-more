@@ -195,14 +195,5 @@ mod tests {
         }
         crate::impl_display_enum!(FooContents2: Qux { msg } => "msg: {msg}");
         assert_eq!(FooContents2::Qux { msg: "foo" }.to_string(), "msg: foo");
-
-        // not supported yet
-        // enum FooContents3 {
-        //     Bar(u64, u64),
-        //     Qux { msg: &'static str },
-        // }
-        // impl_display_enum!(FooContents3, Bar (x, y) => "x: {x}; y: {y}", Qux { msg } => "{msg}");
-        // assert_eq!(FooContents3::Bar(4, 2).to_string(), "x: 4; y: 2");
-        // assert_eq!(FooContents3::Qux { msg: "foo" }.to_string(), "x: 4; y: 2");
     }
 }
