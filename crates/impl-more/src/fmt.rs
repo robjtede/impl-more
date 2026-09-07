@@ -7,8 +7,11 @@
 ///
 /// ```
 /// struct Value<T>(T);
+///
 /// impl_more::forward_debug!(<T> in Value<T>);
+///
 /// let inner = 42u32;
+///
 /// assert_eq!(format!("{:?}", Value(inner)), format!("{:?}", inner));
 /// ```
 #[macro_export]
@@ -52,8 +55,11 @@ macro_rules! forward_debug {
 ///
 /// ```
 /// struct Value<T>(T);
+///
 /// impl_more::forward_binary!(<T> in Value<T>);
+///
 /// let inner = 42u32;
+///
 /// assert_eq!(format!("{:b}", Value(inner)), format!("{:b}", inner));
 /// ```
 #[macro_export]
@@ -97,8 +103,11 @@ macro_rules! forward_binary {
 ///
 /// ```
 /// struct Value<T>(T);
+///
 /// impl_more::forward_octal!(<T> in Value<T>);
+///
 /// let inner = 42u32;
+///
 /// assert_eq!(format!("{:o}", Value(inner)), format!("{:o}", inner));
 /// ```
 #[macro_export]
@@ -142,8 +151,11 @@ macro_rules! forward_octal {
 ///
 /// ```
 /// struct Value<T>(T);
+///
 /// impl_more::forward_lower_hex!(<T> in Value<T>);
+///
 /// let inner = 42u32;
+///
 /// assert_eq!(format!("{:x}", Value(inner)), format!("{:x}", inner));
 /// ```
 #[macro_export]
@@ -187,8 +199,11 @@ macro_rules! forward_lower_hex {
 ///
 /// ```
 /// struct Value<T>(T);
+///
 /// impl_more::forward_upper_hex!(<T> in Value<T>);
+///
 /// let inner = 42u32;
+///
 /// assert_eq!(format!("{:X}", Value(inner)), format!("{:X}", inner));
 /// ```
 #[macro_export]
@@ -232,8 +247,11 @@ macro_rules! forward_upper_hex {
 ///
 /// ```
 /// struct Value<T>(T);
+///
 /// impl_more::forward_lower_exp!(<T> in Value<T>);
+///
 /// let inner = 42u32;
+///
 /// assert_eq!(format!("{:e}", Value(inner)), format!("{:e}", inner));
 /// ```
 #[macro_export]
@@ -277,8 +295,11 @@ macro_rules! forward_lower_exp {
 ///
 /// ```
 /// struct Value<T>(T);
+///
 /// impl_more::forward_upper_exp!(<T> in Value<T>);
+///
 /// let inner = 42u32;
+///
 /// assert_eq!(format!("{:E}", Value(inner)), format!("{:E}", inner));
 /// ```
 #[macro_export]
@@ -322,8 +343,11 @@ macro_rules! forward_upper_exp {
 ///
 /// ```
 /// struct Value<T>(T);
+///
 /// impl_more::forward_pointer!(<T> in Value<T>);
+///
 /// let inner = &42 as *const i32;
+///
 /// assert_eq!(format!("{:p}", Value(inner)), format!("{:p}", inner));
 /// ```
 #[macro_export]

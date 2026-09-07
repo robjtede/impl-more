@@ -20,8 +20,10 @@ Forward formatting traits such as `Debug`, `LowerHex`, and `Binary` to an inner 
 
 ```rust
 struct Mask(u32);
+
 impl_more::forward_debug!(Mask);
 impl_more::forward_lower_hex!(Mask);
+
 assert_eq!(format!("{:#06x}", Mask(42)), "0x002a");
 ```
 
