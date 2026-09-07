@@ -38,7 +38,7 @@
             pkgs.jq
             pkgs.prettier
             pkgs.taplo
-          ] ++ lib.optional pkgs.stdenv.isDarwin [
+          ] ++ lib.optionals pkgs.stdenv.isDarwin [
             pkgs.pkgsBuildHost.libiconv
           ];
 
