@@ -2,7 +2,6 @@
 
 target/
 **/*.rs.bak
-/Cargo.lock
 
 /.direnv
 /.toolchain/
