@@ -34,7 +34,8 @@ clippy toolchain="":
 
 # Downgrade dependencies required to testing using MSRV.
 downgrade-msrv:
-    @ echo "No downgrades currently necessary."
+    cargo update -p eyre --precise 0.6.8 # next ver: Rust 1.65
+    cargo update -p once_cell --precise 1.17.2 # next ver: Rust 1.60
 
 # Test workspace.
 test: test-no-coverage build-no-std
