@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.7
+
 - Add support for mixed variant shapes, field patterns, and explicit positional and named format arguments in `impl_display_enum!`.
 - Remove temporary allocations from `impl_display_enum!` and support `no_std` for data variants.
 
