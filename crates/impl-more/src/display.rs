@@ -205,16 +205,31 @@ macro_rules! impl_display {
 /// [`Display`]: core::fmt::Display
 #[macro_export]
 macro_rules! impl_display_enum {
-    ($ty:ty: $(
-        $variant:ident $(($($tuple:tt)*))? $({$($named:tt)*})? => $output:tt
-    ),+ $(,)?) => {
+    (
+        $ty:ty:
+        $(
+            $variant:ident
+            $( ( $($tuple:tt)* ) )?
+            $( { $($named:tt)* } )?
+            => $output:tt
+        ),+
+        $(,)?
+    ) => {
         impl ::core::fmt::Display for $ty {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 match self {
                     $(
-                        Self::$variant $(($($tuple)*))? $({$($named)*})? =>
-                            $crate::impl_display_enum!(@write fmt
-                                [$(($($tuple)*))? $({$($named)*})?] $output),
+                        Self::$variant
+                        $( ( $($tuple)* ) )?
+                        $( { $($named)* } )?
+                        => $crate::impl_display_enum!(
+                            @write fmt
+                            [
+                                $( ( $($tuple)* ) )?
+                                $( { $($named)* } )?
+                            ]
+                            $output
+                        ),
                     )+
                 }
             }
@@ -222,15 +237,27 @@ macro_rules! impl_display_enum {
     };
 
     // Bare unit-variant strings retain their verbatim output.
-    (@write $fmt:ident [] $text:literal) => {
+    (
+        @write $fmt:ident
+        []
+        $text:literal
+    ) => {
         $fmt.write_str($text)
     };
 
-    (@write $fmt:ident [$($fields:tt)*] $format:literal) => {
+    (
+        @write $fmt:ident
+        [ $($fields:tt)* ]
+        $format:literal
+    ) => {
         ::core::write!($fmt, $format)
     };
 
-    (@write $fmt:ident [$($fields:tt)*] ($format:literal $($args:tt)*)) => {
+    (
+        @write $fmt:ident
+        [ $($fields:tt)* ]
+        ( $format:literal $($args:tt)* )
+    ) => {
         ::core::write!($fmt, $format $($args)*)
     };
 }
