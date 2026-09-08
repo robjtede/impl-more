@@ -33,6 +33,19 @@ enum FooEnum {
 
 impl_more::impl_display_enum!(FooEnum: Bar => "bar", Qux => "qux");
 
+enum DisplayEvent {
+    Idle,
+    Items(&'static [u8]),
+    Progress { completed: usize, total: usize },
+}
+
+impl_more::impl_display_enum! {
+    DisplayEvent:
+    Idle => "idle",
+    Items(items) => ("{} items", items.len()),
+    Progress { completed: count, .. } => "{count} complete",
+}
+
 #[derive(Debug, Clone)]
 struct Baz<T> {
     inner: T,

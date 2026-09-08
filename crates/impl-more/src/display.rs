@@ -134,6 +134,17 @@ macro_rules! impl_display {
 
 /// Implements [`Display`] for enums using a static string or format args for each variant.
 ///
+/// Unit, tuple, and named-field variants can be mixed. Field patterns use Rust syntax, including
+/// renamed fields, `_`, and `..`. The patterns must cover every variant.
+///
+/// Data variants accept format strings with captured fields and explicit positional or named
+/// arguments. Put the format string and explicit arguments in parentheses. Bare strings on unit
+/// variants are written verbatim; braces are not interpreted. Use parentheses to format a unit
+/// variant's output, including captured values.
+///
+/// Outer width, precision, and alignment are not applied to the complete output. Generic parameter
+/// declarations and match guards are not supported.
+///
 /// # Examples
 ///
 /// ```
@@ -161,91 +172,93 @@ macro_rules! impl_display {
 /// assert_eq!(CoordOrMsg::Msg("hi").to_string(), "message: hi");
 /// ```
 ///
+/// Mix variant shapes and compute format arguments:
+///
+/// ```
+/// use impl_more::impl_display_enum;
+///
+/// enum Event {
+///     Idle,
+///     Items(Vec<u8>),
+///     Progress { completed: usize, total: usize },
+/// }
+///
+/// impl_display_enum! {
+///     Event:
+///     Idle => "idle",
+///     Items(items) => ("{} items", items.len()),
+///     Progress { completed: count, .. } => "{count} complete",
+/// }
+///
+/// assert_eq!(Event::Items(vec![1, 2]).to_string(), "2 items");
+/// assert_eq!(Event::Progress { completed: 2, total: 3 }.to_string(), "2 complete");
+/// ```
+///
+/// Explicit format arguments must be inside the parentheses:
+///
+/// ```compile_fail
+/// enum Event { Items(Vec<u8>) }
+/// impl_more::impl_display_enum!(Event: Items(items) => "{} items", items.len());
+/// ```
+///
 /// [`Display`]: core::fmt::Display
 #[macro_export]
 macro_rules! impl_display_enum {
-    ($ty:ty: $($variant:ident => $stringified:literal),+) => {
+    (
+        $ty:ty:
+        $(
+            $variant:ident
+            $( ( $($tuple:tt)* ) )?
+            $( { $($named:tt)* } )?
+            => $output:tt
+        ),+
+        $(,)?
+    ) => {
         impl ::core::fmt::Display for $ty {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                fmt.write_str(match self {
-                    $(
-                        Self::$variant => $stringified,
-                    )*
-                })
-            }
-        }
-    };
-
-    ($ty:ty: $($variant:ident => $stringified:literal),+ ,) => {
-        $crate::impl_display_enum!($ty: $($variant => $stringified),+);
-    };
-
-    ($ty:ty: $($variant:ident ($($inner:tt),+) => $format:literal),+) => {
-        impl ::core::fmt::Display for $ty {
-            fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                use ::core::fmt::Write as _;
-
-                // a more efficient method (format_args) is blocked by:
-                // https://github.com/rust-lang/rust/issues/15023
-                let mut buf = ::std::string::String::new();
-
                 match self {
                     $(
-                        Self::$variant($($crate::impl_display_enum!(iou @ $inner)),+) =>
-                            ::core::write!(&mut buf, $format)?,
-                    )*
-                };
-
-                fmt.write_str(&buf)
+                        Self::$variant
+                        $( ( $($tuple)* ) )?
+                        $( { $($named)* } )?
+                        => $crate::impl_display_enum!(
+                            @write fmt
+                            [
+                                $( ( $($tuple)* ) )?
+                                $( { $($named)* } )?
+                            ]
+                            $output
+                        ),
+                    )+
+                }
             }
         }
     };
 
-    ($ty:ty: $($variant:ident ($($inner:tt),+) => $format:literal),+ ,) => {
-        $crate::impl_display_enum!($ty: $($variant ($($inner),+) => $format),+);
+    // Bare unit-variant strings retain their verbatim output.
+    (
+        @write $fmt:ident
+        []
+        $text:literal
+    ) => {
+        $fmt.write_str($text)
     };
 
-    ($ty:ty: $($variant:ident { $($inner:ident),+ } => $format:literal),+) => {
-        impl ::core::fmt::Display for $ty {
-            fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                use ::core::fmt::Write as _;
-
-                // a more efficient method (format_args) is blocked by:
-                // https://github.com/rust-lang/rust/issues/15023
-                let mut buf = ::std::string::String::new();
-
-                match self {
-                    $(
-                        Self::$variant { $($inner),+ } =>
-                            ::core::write!(&mut buf, $format)?,
-                    )*
-                };
-
-                fmt.write_str(&buf)
-            }
-        }
+    (
+        @write $fmt:ident
+        [ $($fields:tt)* ]
+        $format:literal
+    ) => {
+        ::core::write!($fmt, $format)
     };
 
-    ($ty:ty: $($variant:ident { $($inner:ident),+ } => $format:literal),+ ,) => {
-        $crate::impl_display_enum!($ty: $($variant { $($inner),+ } => $format),+);
+    (
+        @write $fmt:ident
+        [ $($fields:tt)* ]
+        ( $format:literal $($args:tt)* )
+    ) => {
+        ::core::write!($fmt, $format $($args)*)
     };
-
-    (iou @ $ident:ident) => {
-        $ident
-    };
-
-    // IDENT-or-underscore
-    (iou @ $ident:ident) => {
-        $ident
-    };
-
-    // ident-or-UNDERSCORE
-    (iou @ _) => {
-        _
-    };
-
-
-    // TODO: mixed named and positional variant support
 }
 
 #[cfg(test)]
@@ -327,5 +340,101 @@ mod tests {
         impl_display_enum!(Foo: Bar { value } => "{value}",);
 
         assert_eq!(Foo::Bar { value: 42 }.to_string(), "42");
+    }
+
+    #[test]
+    fn enum_mixed_patterns_and_format_arguments() {
+        #[allow(dead_code)] // These fields test patterns that ignore data.
+        enum Event {
+            Idle,
+            Message(&'static str, bool),
+            Progress { completed: usize, total: usize },
+            Items(&'static [u8]),
+            Done,
+        }
+
+        impl_display_enum! {
+            Event:
+            Idle => "{{idle}}",
+            Message(msg, ..) => "{{{msg}}}",
+            Progress { completed: count, .. } => "{count} complete",
+            Items(items) => ("{} items ({label})", items.len(), label = "ready",),
+            Done => ("done: {}", 42),
+        }
+
+        assert_eq!(Event::Idle.to_string(), "{{idle}}");
+        assert_eq!(Event::Message("hi", true).to_string(), "{hi}");
+        assert_eq!(
+            Event::Progress {
+                completed: 2,
+                total: 3
+            }
+            .to_string(),
+            "2 complete"
+        );
+        assert_eq!(Event::Items(&[1, 2]).to_string(), "2 items (ready)");
+        assert_eq!(Event::Done.to_string(), "done: 42");
+    }
+
+    #[test]
+    fn enum_format_arguments_without_trailing_comma() {
+        #[allow(dead_code)] // The first tuple field tests the wildcard pattern.
+        enum Value {
+            Tuple(u8, u8),
+            Named { value: u8 },
+        }
+
+        impl_display_enum!(Value:
+            Tuple(_, value) => "{value:02x}",
+            Named { value } => ("{number:02x}", number = value)
+        );
+
+        assert_eq!(Value::Tuple(0, 10).to_string(), "0a");
+        assert_eq!(Value::Named { value: 11 }.to_string(), "0b");
+
+        enum Count {
+            Items(&'static [u8]),
+        }
+        impl_display_enum!(Count: Items(items) => ("{}", items.len()));
+        assert_eq!(Count::Items(&[1, 2]).to_string(), "2");
+    }
+
+    #[test]
+    fn enum_grouped_unit_string_supports_captures() {
+        const LABEL: &str = "ready";
+        enum State {
+            Bare,
+            Grouped,
+        }
+        impl_display_enum!(State:
+            Bare => "{LABEL}",
+            Grouped => ("{LABEL}"),
+        );
+        assert_eq!(State::Bare.to_string(), "{LABEL}");
+        assert_eq!(State::Grouped.to_string(), "ready");
+    }
+
+    #[test]
+    fn enum_propagates_format_errors() {
+        struct Fails;
+        impl core::fmt::Display for Fails {
+            fn fmt(&self, _: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+                Err(core::fmt::Error)
+            }
+        }
+
+        enum Value {
+            Tuple(Fails),
+            Named { value: Fails },
+        }
+        impl_display_enum!(Value: Tuple(value) => "{value}", Named { value } => "{value}");
+
+        let mut output = String::new();
+        core::fmt::write(&mut output, format_args!("{}", Value::Tuple(Fails))).unwrap_err();
+        core::fmt::write(
+            &mut output,
+            format_args!("{}", Value::Named { value: Fails }),
+        )
+        .unwrap_err();
     }
 }
