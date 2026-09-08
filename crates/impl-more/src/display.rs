@@ -138,8 +138,9 @@ macro_rules! impl_display {
 /// including renamed fields, `_`, and `..`. The patterns must cover every variant.
 ///
 /// Data variants accept format strings with captured fields and explicit positional or
-/// named arguments. Unit variants without explicit arguments write their string verbatim;
-/// braces are not interpreted. Add explicit arguments to format a unit variant's output.
+/// named arguments. Put the format string and explicit arguments in parentheses.
+/// Bare strings on unit variants are written verbatim; braces are not interpreted.
+/// Use parentheses to format a unit variant's output, including captured values.
 ///
 /// Emitted code supports `no_std` and writes directly to the formatter without a temporary
 /// allocation. Outer width, precision, and alignment are not applied to the complete output.
@@ -186,7 +187,7 @@ macro_rules! impl_display {
 /// impl_display_enum! {
 ///     Event:
 ///     Idle => "idle",
-///     Items(items) => "{} items", items.len(),
+///     Items(items) => ("{} items", items.len()),
 ///     Progress { completed: count, .. } => "{count} complete",
 /// }
 ///
@@ -194,97 +195,42 @@ macro_rules! impl_display {
 /// assert_eq!(Event::Progress { completed: 2, total: 3 }.to_string(), "2 complete");
 /// ```
 ///
+/// Explicit format arguments must be inside the parentheses:
+///
+/// ```compile_fail
+/// enum Event { Items(Vec<u8>) }
+/// impl_more::impl_display_enum!(Event: Items(items) => "{} items", items.len());
+/// ```
+///
 /// [`Display`]: core::fmt::Display
 #[macro_export]
 macro_rules! impl_display_enum {
-    // Keep the common unit-only form free of recursive parsing.
-    ($ty:ty: $($variant:ident => $text:literal),+ $(,)?) => {
+    ($ty:ty: $(
+        $variant:ident $(($($tuple:tt)*))? $({$($named:tt)*})? => $output:tt
+    ),+ $(,)?) => {
         impl ::core::fmt::Display for $ty {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                fmt.write_str(match self {
-                    $(Self::$variant => $text,)+
-                })
-            }
-        }
-    };
-
-    ($ty:ty: $($variants:tt)+) => {
-        $crate::impl_display_enum!(@arms [$ty] [fmt] [] $($variants)+);
-    };
-
-    // Collect complete match arms because macros cannot expand to individual arms.
-    (@arms [$ty:ty] [$fmt:ident] [$($arms:tt)*]) => {
-        impl ::core::fmt::Display for $ty {
-            fn fmt(&self, $fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 match self {
-                    $($arms)*
+                    $(
+                        Self::$variant $(($($tuple)*))? $({$($named)*})? =>
+                            $crate::impl_display_enum!(@write fmt
+                                [$(($($tuple)*))? $({$($named)*})?] $output),
+                    )+
                 }
             }
         }
     };
 
-    (@arms [$ty:ty] [$fmt:ident] [$($arms:tt)*]
-        $variant:ident ($($fields:tt)*) => $format:literal $($rest:tt)*
-    ) => {
-        $crate::impl_display_enum!(@args [$ty] [$fmt] [$($arms)*]
-            [Self::$variant($($fields)*)] [format] [$format] [] $($rest)*);
-    };
-
-    (@arms [$ty:ty] [$fmt:ident] [$($arms:tt)*]
-        $variant:ident { $($fields:tt)* } => $format:literal $($rest:tt)*
-    ) => {
-        $crate::impl_display_enum!(@args [$ty] [$fmt] [$($arms)*]
-            [Self::$variant { $($fields)* }] [format] [$format] [] $($rest)*);
-    };
-
-    (@arms [$ty:ty] [$fmt:ident] [$($arms:tt)*]
-        $variant:ident => $format:literal $($rest:tt)*
-    ) => {
-        $crate::impl_display_enum!(@args [$ty] [$fmt] [$($arms)*]
-            [Self::$variant] [literal] [$format] [] $($rest)*);
-    };
-
-    // Recognize the next variant before treating a comma as a format argument.
-    (@args [$ty:ty] [$fmt:ident] [$($arms:tt)*]
-        [$($pattern:tt)*] [$mode:ident] [$format:literal] [$($args:tt)*]
-        , $variant:ident $(($($tuple:tt)*))? $({$($named:tt)*})? => $($rest:tt)*
-    ) => {
-        $crate::impl_display_enum!(@arms [$ty] [$fmt] [
-            $($arms)*
-            $($pattern)* => $crate::impl_display_enum!(@write $fmt $mode $format $($args)*),
-        ] $variant $(($($tuple)*))? $({$($named)*})? => $($rest)*);
-    };
-
-    (@args [$ty:ty] [$fmt:ident] [$($arms:tt)*]
-        [$($pattern:tt)*] [$mode:ident] [$format:literal] [$($args:tt)*]
-        , $name:ident = $value:expr $(, $($rest:tt)*)?
-    ) => {
-        $crate::impl_display_enum!(@args [$ty] [$fmt] [$($arms)*]
-            [$($pattern)*] [format] [$format] [$($args)*, $name = $value] $(, $($rest)*)?);
-    };
-
-    (@args [$ty:ty] [$fmt:ident] [$($arms:tt)*]
-        [$($pattern:tt)*] [$mode:ident] [$format:literal] [$($args:tt)*]
-        , $value:expr $(, $($rest:tt)*)?
-    ) => {
-        $crate::impl_display_enum!(@args [$ty] [$fmt] [$($arms)*]
-            [$($pattern)*] [format] [$format] [$($args)*, $value] $(, $($rest)*)?);
-    };
-
-    (@args [$ty:ty] [$fmt:ident] [$($arms:tt)*]
-        [$($pattern:tt)*] [$mode:ident] [$format:literal] [$($args:tt)*] $(,)?
-    ) => {
-        $crate::impl_display_enum!(@arms [$ty] [$fmt] [
-            $($arms)*
-            $($pattern)* => $crate::impl_display_enum!(@write $fmt $mode $format $($args)*),
-        ]);
-    };
-
-    (@write $fmt:ident literal $text:literal) => {
+    // Bare unit-variant strings retain their verbatim output.
+    (@write $fmt:ident [] $text:literal) => {
         $fmt.write_str($text)
     };
 
-    (@write $fmt:ident format $format:literal $($args:tt)*) => {
+    (@write $fmt:ident [$($fields:tt)*] $format:literal) => {
+        ::core::write!($fmt, $format)
+    };
+
+    (@write $fmt:ident [$($fields:tt)*] ($format:literal $($args:tt)*)) => {
         ::core::write!($fmt, $format $($args)*)
     };
 }
@@ -386,8 +332,8 @@ mod tests {
             Idle => "{{idle}}",
             Message(msg, ..) => "{{{msg}}}",
             Progress { completed: count, .. } => "{count} complete",
-            Items(items) => "{} items ({label})", items.len(), label = "ready",
-            Done => "done: {}", 42,
+            Items(items) => ("{} items ({label})", items.len(), label = "ready",),
+            Done => ("done: {}", 42),
         }
 
         assert_eq!(Event::Idle.to_string(), "{{idle}}");
@@ -414,7 +360,7 @@ mod tests {
 
         impl_display_enum!(Value:
             Tuple(_, value) => "{value:02x}",
-            Named { value } => "{number:02x}", number = value
+            Named { value } => ("{number:02x}", number = value)
         );
 
         assert_eq!(Value::Tuple(0, 10).to_string(), "0a");
@@ -423,8 +369,23 @@ mod tests {
         enum Count {
             Items(&'static [u8]),
         }
-        impl_display_enum!(Count: Items(items) => "{}", items.len());
+        impl_display_enum!(Count: Items(items) => ("{}", items.len()));
         assert_eq!(Count::Items(&[1, 2]).to_string(), "2");
+    }
+
+    #[test]
+    fn enum_grouped_unit_string_supports_captures() {
+        const LABEL: &str = "ready";
+        enum State {
+            Bare,
+            Grouped,
+        }
+        impl_display_enum!(State:
+            Bare => "{LABEL}",
+            Grouped => ("{LABEL}"),
+        );
+        assert_eq!(State::Bare.to_string(), "{LABEL}");
+        assert_eq!(State::Grouped.to_string(), "ready");
     }
 
     #[test]

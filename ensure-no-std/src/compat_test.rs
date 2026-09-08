@@ -42,7 +42,7 @@ enum DisplayEvent {
 impl_more::impl_display_enum! {
     DisplayEvent:
     Idle => "idle",
-    Items(items) => "{} items", items.len(),
+    Items(items) => ("{} items", items.len()),
     Progress { completed: count, .. } => "{count} complete",
 }
 
