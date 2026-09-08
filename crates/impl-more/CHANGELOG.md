@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add support for mixed variant shapes, field patterns, and explicit positional and named format arguments in `impl_display_enum!`.
+- Remove temporary allocations from `impl_display_enum!` and support `no_std` for data variants.
+
 ## 0.3.6
 
 - Add `forward_into_iterator!`, `forward_from_iterator!`, and `forward_extend!` macros for collection wrappers.
