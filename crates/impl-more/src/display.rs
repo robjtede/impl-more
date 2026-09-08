@@ -134,17 +134,16 @@ macro_rules! impl_display {
 
 /// Implements [`Display`] for enums using a static string or format args for each variant.
 ///
-/// Unit, tuple, and named-field variants can be mixed. Field patterns use Rust syntax,
-/// including renamed fields, `_`, and `..`. The patterns must cover every variant.
+/// Unit, tuple, and named-field variants can be mixed. Field patterns use Rust syntax, including
+/// renamed fields, `_`, and `..`. The patterns must cover every variant.
 ///
-/// Data variants accept format strings with captured fields and explicit positional or
-/// named arguments. Put the format string and explicit arguments in parentheses.
-/// Bare strings on unit variants are written verbatim; braces are not interpreted.
-/// Use parentheses to format a unit variant's output, including captured values.
+/// Data variants accept format strings with captured fields and explicit positional or named
+/// arguments. Put the format string and explicit arguments in parentheses. Bare strings on unit
+/// variants are written verbatim; braces are not interpreted. Use parentheses to format a unit
+/// variant's output, including captured values.
 ///
-/// Emitted code supports `no_std` and writes directly to the formatter without a temporary
-/// allocation. Outer width, precision, and alignment are not applied to the complete output.
-/// Generic parameter declarations and match guards are not supported.
+/// Outer width, precision, and alignment are not applied to the complete output. Generic parameter
+/// declarations and match guards are not supported.
 ///
 /// # Examples
 ///
