@@ -431,11 +431,11 @@ mod tests {
         impl_display_enum!(Value: Tuple(value) => "{value}", Named { value } => "{value}");
 
         let mut output = String::new();
-        assert!(core::fmt::write(&mut output, format_args!("{}", Value::Tuple(Fails))).is_err());
-        assert!(core::fmt::write(
+        core::fmt::write(&mut output, format_args!("{}", Value::Tuple(Fails))).unwrap_err();
+        core::fmt::write(
             &mut output,
-            format_args!("{}", Value::Named { value: Fails })
+            format_args!("{}", Value::Named { value: Fails }),
         )
-        .is_err());
+        .unwrap_err();
     }
 }
