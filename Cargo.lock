@@ -14,7 +14,7 @@ dependencies = [
 
 [[package]]
 name = "impl-more"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "eyre",
  "rustversion",
