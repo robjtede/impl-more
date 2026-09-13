@@ -72,6 +72,13 @@ enum Errors {
 
 impl_more::impl_display!(Errors: "wrapped");
 impl_more::impl_error_enum!(Errors: Wrapped(err) => err);
+impl_more::impl_enum_from!(LeafErr => Errors::Wrapped);
+
+enum GenericError<T> {
+    Other(T),
+}
+
+impl_more::impl_enum_from!(<T> in T => GenericError<T>::Other);
 
 #[derive(Debug, Clone)]
 struct Checked(bool);
