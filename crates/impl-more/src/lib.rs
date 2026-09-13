@@ -118,6 +118,8 @@ mod fmt;
 #[macro_use]
 mod from;
 #[macro_use]
+mod enum_from;
+#[macro_use]
 mod from_str;
 #[macro_use]
 mod iter;
