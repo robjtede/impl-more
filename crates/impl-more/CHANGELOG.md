@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `impl_enum_from!` macro for conversions into enum variants with one unnamed field, including generic enums.
+
 ## 0.3.7
 
 - Add support for mixed variant shapes, field patterns, and explicit positional and named format arguments in `impl_display_enum!`.
