@@ -1,4 +1,4 @@
-/// Implement [`From`] for an enum variant with one unnamed field.
+/// Implement [`From`] for an enum variant with one named or unnamed field.
 ///
 /// The destination is the enum path followed by the variant name. Each source
 /// type can have only one conversion into a given enum. Generic conversions must
@@ -17,6 +17,18 @@
 /// fn read() -> Result<String, Error> {
 ///     Ok(std::fs::read_to_string("config.txt")?)
 /// }
+/// ```
+///
+/// With a named field:
+/// ```
+/// enum Error {
+///     Io { source: std::io::Error },
+/// }
+///
+/// impl_more::impl_enum_from!(std::io::Error => Error::Io { source });
+///
+/// let error = Error::from(std::io::Error::from(std::io::ErrorKind::NotFound));
+/// assert!(matches!(error, Error::Io { source } if source.kind() == std::io::ErrorKind::NotFound));
 /// ```
 ///
 /// With a generic enum and a module path:
@@ -51,6 +63,17 @@ macro_rules! impl_enum_from {
         {
             fn from(value: $from) -> Self {
                 Self::$variant(value)
+            }
+        }
+    };
+
+    (@parse [$($generic:tt)*] [$from:ty] [$($path:tt)*]
+        $enum:ident $(<$($arg:ty),+>)? :: $variant:ident { $field:ident $(,)? } $(,)?) => {
+        impl $($generic)* ::core::convert::From<$from>
+            for $($path)* $enum $(<$($arg),+>)?
+        {
+            fn from(value: $from) -> Self {
+                Self::$variant { $field: value }
             }
         }
     };
@@ -119,6 +142,44 @@ mod tests {
         assert_eq!(
             errors::Error::from((7_u8, true)),
             errors::Error::Other((7, true))
+        );
+    }
+
+    #[test]
+    fn named_error_conversion_with_question_mark() {
+        enum Error {
+            Io { source: std::io::Error },
+        }
+
+        impl_enum_from!(std::io::Error => Error::Io { source });
+
+        fn fail() -> Result<(), Error> {
+            Err(std::io::Error::from(std::io::ErrorKind::PermissionDenied))?;
+            Ok(())
+        }
+
+        match fail() {
+            Err(Error::Io { source }) => {
+                assert_eq!(source.kind(), std::io::ErrorKind::PermissionDenied);
+            }
+            _ => panic!("expected an IO error"),
+        }
+    }
+
+    #[test]
+    fn named_generic_enum_with_module_path() {
+        mod errors {
+            #[derive(Debug, PartialEq)]
+            pub enum Error<T> {
+                Other { source: T },
+            }
+        }
+
+        impl_enum_from!(<T> in T => errors::Error<T>::Other { source, },);
+
+        assert_eq!(
+            errors::Error::from(42_u32),
+            errors::Error::Other { source: 42 }
         );
     }
 
