@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Minimum supported Rust version (MSRV) is now 1.60.
+
 ## 0.3.8
 
 - Add `impl_enum_from!` macro for conversions into enum variants with one named or unnamed field, including generic enums.
