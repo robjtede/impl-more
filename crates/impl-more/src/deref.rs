@@ -2,7 +2,7 @@
 ///
 /// The first argument is that of the newtype struct to create the impl for and the second is the
 /// deref target type. The third argument is required for non-newtype structs and is the name of the
-/// field to deref to. Type parameters require special handling, see examples.
+/// field to deref to. Declare type and const parameters before `in`, as shown below.
 ///
 /// Also see [`impl_deref_mut`], [`impl_deref_and_mut`], and [`forward_deref_and_mut`].
 ///
@@ -14,6 +14,15 @@
 ///
 /// let mut foo = Foo("bar".to_owned());
 /// assert_eq!(foo.len(), 3);
+/// ```
+///
+/// With a type parameter and const parameter:
+/// ```
+/// struct Array<T, const N: usize>([T; N]);
+/// impl_more::impl_deref!(<T, const N: usize> in Array<T, N> => [T; N]);
+///
+/// let array = Array([1, 2, 3]);
+/// assert_eq!(array.len(), 3);
 /// ```
 ///
 /// With a named field struct and type parameter:
@@ -31,8 +40,28 @@
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
 #[macro_export]
 macro_rules! impl_deref {
-    (<$($generic:ident),+> in $this:ty => $target:ty) => {
-        impl <$($generic),+> ::core::ops::Deref for $this {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::impl_deref!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::impl_deref!(@parse impl_deref [const] $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::impl_deref!(@parse impl_deref [$generic,] $($rest)+);
+    };
+
+    (@parse $macro:ident [$($generic:tt)*] > in $($rest:tt)+) => {
+        $crate::$macro!(@impl [$($generic)*] $($rest)+);
+    };
+
+    (@parse $macro:ident [$($generic:tt)*] $next:tt $($rest:tt)+) => {
+        $crate::impl_deref!(@parse $macro [$($generic)* $next] $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $target:ty) => {
+        impl <$($generic)+> ::core::ops::Deref for $this {
             type Target = $target;
 
             fn deref(&self) -> &Self::Target {
@@ -41,8 +70,8 @@ macro_rules! impl_deref {
         }
     };
 
-    (<$($generic:ident),+> in $this:ty => $field:ident : $target:ty) => {
-        impl <$($generic),+> ::core::ops::Deref for $this {
+    (@impl [$($generic:tt)+] $this:ty => $field:ident : $target:ty) => {
+        impl <$($generic)+> ::core::ops::Deref for $this {
             type Target = $target;
 
             fn deref(&self) -> &Self::Target {
@@ -78,7 +107,7 @@ macro_rules! impl_deref {
 /// implement [`Deref`]. The second argument is required for non-newtype structs and is the field
 /// to deref to.
 ///
-/// This macro has the same type parameter support and format as [`impl_deref`].
+/// This macro has the same type and const parameter support and format as [`impl_deref`].
 ///
 /// Also see [`impl_deref`], [`impl_deref_and_mut`], and [`forward_deref_and_mut`].
 ///
@@ -96,6 +125,18 @@ macro_rules! impl_deref {
 /// foo.push('!');
 ///
 /// assert_eq!(*foo, "bar!");
+/// ```
+///
+/// With a type parameter and const parameter:
+/// ```
+/// struct Array<T, const N: usize>([T; N]);
+/// impl_more::impl_deref!(<T, const N: usize> in Array<T, N> => [T; N]);
+/// impl_more::impl_deref_mut!(<T, const N: usize> in Array<T, N>);
+///
+/// let mut array = Array([1, 2, 3]);
+/// array[0] = 4;
+///
+/// assert_eq!(*array, [4, 2, 3]);
 /// ```
 ///
 /// With a named field struct and type parameter:
@@ -117,16 +158,28 @@ macro_rules! impl_deref {
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
 #[macro_export]
 macro_rules! impl_deref_mut {
-    (<$($generic:ident),+> in $this:ty) => {
-        impl <$($generic),+> ::core::ops::DerefMut for $this {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::impl_deref_mut!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::impl_deref!(@parse impl_deref_mut [const] $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::impl_deref!(@parse impl_deref_mut [$generic,] $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty) => {
+        impl <$($generic)+> ::core::ops::DerefMut for $this {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.0
             }
         }
     };
 
-    (<$($generic:ident),+> in $this:ty => $field:ident) => {
-        impl <$($generic),+> ::core::ops::DerefMut for $this {
+    (@impl [$($generic:tt)+] $this:ty => $field:ident) => {
+        impl <$($generic)+> ::core::ops::DerefMut for $this {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.$field
             }
@@ -155,7 +208,7 @@ macro_rules! impl_deref_mut {
 /// Use the `ref <type>` form for deref-ing to types with lifetimes like `&str`. For newtype
 /// structs, only the struct name and deref target type is necessary.
 ///
-/// This macro has the same type parameter support and format as [`impl_deref`].
+/// This macro has the same type and const parameter support and format as [`impl_deref`].
 ///
 /// Also see [`forward_deref_and_mut`].
 ///
@@ -176,14 +229,37 @@ macro_rules! impl_deref_mut {
 /// accepts_string_slice(&foo);
 /// ```
 ///
+/// With a type parameter and const parameter:
+/// ```
+/// struct Array<T, const N: usize>([T; N]);
+/// impl_more::impl_deref_and_mut!(<T, const N: usize> in Array<T, N> => [T; N]);
+///
+/// let mut array = Array([1, 2, 3]);
+/// array.reverse();
+///
+/// assert_eq!(*array, [3, 2, 1]);
+/// ```
+///
 /// [`Deref`]: core::ops::Deref
 /// [`DerefMut`]: core::ops::DerefMut
 /// [`impl_deref`]: crate::impl_deref
 /// [`forward_deref_and_mut`]: crate::forward_deref_and_mut
 #[macro_export]
 macro_rules! impl_deref_and_mut {
-    (<$($generic:ident),+> in $this:ty => $target:ty) => {
-        impl <$($generic),+> ::core::ops::Deref for $this {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::impl_deref_and_mut!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::impl_deref!(@parse impl_deref_and_mut [const] $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::impl_deref!(@parse impl_deref_and_mut [$generic,] $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $target:ty) => {
+        impl <$($generic)+> ::core::ops::Deref for $this {
             type Target = $target;
 
             fn deref(&self) -> &Self::Target {
@@ -191,15 +267,15 @@ macro_rules! impl_deref_and_mut {
             }
         }
 
-        impl <$($generic),+> ::core::ops::DerefMut for $this {
+        impl <$($generic)+> ::core::ops::DerefMut for $this {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.0
             }
         }
     };
 
-    (<$($generic:ident),+> in $this:ty => $field:ident : $target:ty) => {
-        impl <$($generic),+> ::core::ops::Deref for $this {
+    (@impl [$($generic:tt)+] $this:ty => $field:ident : $target:ty) => {
+        impl <$($generic)+> ::core::ops::Deref for $this {
             type Target = $target;
 
             fn deref(&self) -> &Self::Target {
@@ -207,7 +283,7 @@ macro_rules! impl_deref_and_mut {
             }
         }
 
-        impl <$($generic),+> ::core::ops::DerefMut for $this {
+        impl <$($generic)+> ::core::ops::DerefMut for $this {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.$field
             }

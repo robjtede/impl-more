@@ -11,6 +11,17 @@ impl_more::forward_as_mut!(Foo => str);
 impl_more::impl_deref!(Foo => String);
 impl_more::impl_deref_mut!(Foo);
 
+struct Array<T, const N: usize>([T; N]);
+
+impl_more::impl_deref_and_mut!(<T, const N: usize> in Array<T, N> => [T; N]);
+
+struct Buffer<const COUNT: usize> {
+    items: [u8; COUNT],
+}
+
+impl_more::impl_deref!(<const COUNT: usize> in Buffer<COUNT> => items: [u8; COUNT]);
+impl_more::impl_deref_mut!(<const COUNT: usize> in Buffer<COUNT> => items);
+
 impl_more::impl_from!(String => Foo);
 impl_more::impl_into!(Foo => String);
 
