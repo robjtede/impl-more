@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add const generic parameter support to `impl_deref!`, `impl_deref_mut!`, and `impl_deref_and_mut!`.
 - Minimum supported Rust version (MSRV) is now 1.60.
 
 ## 0.3.8
