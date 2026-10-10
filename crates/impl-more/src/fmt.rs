@@ -3,6 +3,8 @@
 /// The formatter is passed through unchanged. Emitted code supports `no_std`.
 /// Omit the field for a tuple newtype. All type parameters receive a `Debug` bound.
 ///
+/// Declare type and const parameters before `in`. Const parameters receive no formatting bound.
+///
 /// # Examples
 ///
 /// With a newtype struct:
@@ -49,22 +51,44 @@
 ///     "42",
 /// );
 /// ```
+///
+/// With type and const parameters:
+/// ```
+/// struct Array<T, const N: usize>([T; N]);
+/// impl_more::forward_debug!(<T, const N: usize> in Array<T, N>);
+///
+/// assert_eq!(format!("{:?}", Array([1, 2, 3])), "[1, 2, 3]");
+/// ```
 #[macro_export]
 macro_rules! forward_debug {
-    (<$($generic:ident),+> in $this:ty => $field:tt $(,)?) => {
-        impl <$($generic: ::core::fmt::Debug),+> ::core::fmt::Debug for $this {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::forward_debug!(@impl [$($generic: ::core::fmt::Debug),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_debug [: ::core::fmt::Debug] [] const $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_debug [: ::core::fmt::Debug] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $field:tt $(,)?) => {
+        impl <$($generic)+> ::core::fmt::Debug for $this {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 ::core::fmt::Debug::fmt(&self.$field, fmt)
             }
         }
     };
-    (<$($generic:ident),+> in $this:ty $(,)?) => {
-        impl <$($generic: ::core::fmt::Debug),+> ::core::fmt::Debug for $this {
+
+    (@impl [$($generic:tt)+] $this:ty $(,)?) => {
+        impl <$($generic)+> ::core::fmt::Debug for $this {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
                 ::core::fmt::Debug::fmt(&self.0, fmt)
             }
         }
     };
+
     ($this:ty => $field:tt $(,)?) => {
         impl ::core::fmt::Debug for $this {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -72,6 +96,7 @@ macro_rules! forward_debug {
             }
         }
     };
+
     ($this:ty $(,)?) => {
         impl ::core::fmt::Debug for $this {
             fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {

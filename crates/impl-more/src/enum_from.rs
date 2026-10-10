@@ -4,6 +4,8 @@
 /// type can have only one conversion into a given enum. Generic conversions must
 /// not overlap with other conversions for any choice of type arguments.
 ///
+/// Declare type and const parameters before `in`.
+///
 /// # Examples
 ///
 /// With an error enum:
@@ -46,20 +48,44 @@
 /// let error = errors::Error::from(vec![42_u32]);
 /// assert!(matches!(error, errors::Error::Other(values) if values == [42]));
 /// ```
+///
+/// With type and const parameters:
+/// ```
+/// enum Value<T, const N: usize> {
+///     Items([T; N]),
+/// }
+///
+/// impl_more::impl_enum_from!(<T, const N: usize> in [T; N] => Value<T, N>::Items);
+///
+/// let value = Value::from([1, 2, 3]);
+/// assert!(matches!(value, Value::Items([1, 2, 3])));
+/// ```
 #[macro_export]
 macro_rules! impl_enum_from {
-    (<$($generic:ident),+> in $from:ty => $($target:tt)+) => {
-        $crate::impl_enum_from!(@parse [<$($generic),+>] [$from] [] $($target)+);
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::impl_enum_from!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse impl_enum_from [] [] const $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse impl_enum_from [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $from:ty => $($target:tt)+) => {
+        $crate::impl_enum_from!(@parse [<$($generic)+>] [$from] [] $($target)+);
     };
 
     ($from:ty => $($target:tt)+) => {
         $crate::impl_enum_from!(@parse [] [$from] [] $($target)+);
     };
 
-    (@parse [$($generic:tt)*] [$from:ty] [$($path:tt)*]
-        $enum:ident $(<$($arg:ty),+>)? :: $variant:ident $(,)?) => {
+    (@parse [$($generic:tt)*] [$from:ty] [$($enum:tt)+]
+        :: $variant:ident $(,)?) => {
         impl $($generic)* ::core::convert::From<$from>
-            for $($path)* $enum $(<$($arg),+>)?
+            for $($enum)+
         {
             fn from(value: $from) -> Self {
                 Self::$variant(value)
@@ -67,10 +93,10 @@ macro_rules! impl_enum_from {
         }
     };
 
-    (@parse [$($generic:tt)*] [$from:ty] [$($path:tt)*]
-        $enum:ident $(<$($arg:ty),+>)? :: $variant:ident { $field:ident $(,)? } $(,)?) => {
+    (@parse [$($generic:tt)*] [$from:ty] [$($enum:tt)+]
+        :: $variant:ident { $field:ident $(,)? } $(,)?) => {
         impl $($generic)* ::core::convert::From<$from>
-            for $($path)* $enum $(<$($arg),+>)?
+            for $($enum)+
         {
             fn from(value: $from) -> Self {
                 Self::$variant { $field: value }
@@ -79,13 +105,9 @@ macro_rules! impl_enum_from {
     };
 
     (@parse [$($generic:tt)*] [$from:ty] [$($path:tt)*]
-        $segment:ident :: $($rest:tt)+) => {
+        $next:tt $($rest:tt)+) => {
         $crate::impl_enum_from!(@parse [$($generic)*] [$from]
-            [$($path)* $segment ::] $($rest)+);
-    };
-
-    (@parse [$($generic:tt)*] [$from:ty] [] :: $($rest:tt)+) => {
-        $crate::impl_enum_from!(@parse [$($generic)*] [$from] [::] $($rest)+);
+            [$($path)* $next] $($rest)+);
     };
 }
 

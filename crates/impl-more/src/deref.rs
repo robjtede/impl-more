@@ -330,6 +330,8 @@ macro_rules! impl_deref_and_mut {
 ///
 /// Also see [`impl_deref_and_mut`].
 ///
+/// Declare type and const parameters before `in`.
+///
 /// # Examples
 /// With a newtype struct:
 /// ```
@@ -347,8 +349,94 @@ macro_rules! impl_deref_and_mut {
 /// [`impl_deref_and_mut`]: crate::impl_deref_and_mut
 /// [`Deref`]: core::ops::Deref
 /// [`DerefMut`]: core::ops::DerefMut
+///
+/// With type and const parameters:
+/// ```
+/// struct Array<T, const N: usize>(Box<[T; N]>);
+/// impl_more::forward_deref_and_mut!(<T, const N: usize> in Array<T, N> => [T; N]);
+///
+/// let mut value = Array(Box::new([1, 2, 3]));
+/// value.reverse();
+/// assert_eq!(*value, [3, 2, 1]);
+/// ```
 #[macro_export]
 macro_rules! forward_deref_and_mut {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::forward_deref_and_mut!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_deref_and_mut [] [] const $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_deref_and_mut [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $ty:ty => $target:ty) => {
+        impl <$($generic)+> ::core::ops::Deref for $ty {
+            type Target = $target;
+
+            fn deref(&self) -> &Self::Target {
+                ::core::ops::Deref::deref(&self.0)
+            }
+        }
+
+        impl <$($generic)+> ::core::ops::DerefMut for $ty {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                ::core::ops::DerefMut::deref_mut(&mut self.0)
+            }
+        }
+    };
+
+    (@impl [$($generic:tt)+] $ty:ty => ref $target:ty) => {
+        impl<'__impl_more_a, $($generic)+> ::core::ops::Deref for $ty {
+            type Target = $target;
+
+            fn deref(&self) -> &Self::Target {
+                ::core::ops::Deref::deref(&self.0)
+            }
+        }
+
+        impl<'__impl_more_a, $($generic)+> ::core::ops::DerefMut for $ty {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                ::core::ops::DerefMut::deref_mut(&mut self.0)
+            }
+        }
+    };
+
+    (@impl [$($generic:tt)+] $ty:ty => $field:ident : $target:ty) => {
+        impl <$($generic)+> ::core::ops::Deref for $ty {
+            type Target = $target;
+
+            fn deref(&self) -> &Self::Target {
+                ::core::ops::Deref::deref(&self.$field)
+            }
+        }
+
+        impl <$($generic)+> ::core::ops::DerefMut for $ty {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                ::core::ops::DerefMut::deref_mut(&mut self.$field)
+            }
+        }
+    };
+
+    (@impl [$($generic:tt)+] $ty:ty => $field:ident : ref $target:ty) => {
+        impl<'__impl_more_a, $($generic)+> ::core::ops::Deref for $ty {
+            type Target = $target;
+
+            fn deref(&self) -> &Self::Target {
+                ::core::ops::Deref::deref(&self.$field)
+            }
+        }
+
+        impl<'__impl_more_a, $($generic)+> ::core::ops::DerefMut for $ty {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                ::core::ops::DerefMut::deref_mut(&mut self.$field)
+            }
+        }
+    };
+
     ($ty:ty => $target:ty) => {
         impl ::core::ops::Deref for $ty {
             type Target = $target;

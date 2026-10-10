@@ -112,4 +112,18 @@ impl_more::impl_display_enum! {
 impl_more::impl_error_enum!(Err: Io(err) => err);
 ```
 
+Declare type and const parameters before `in`:
+
+```rust
+struct Array<T, const N: usize>([T; N]);
+
+impl_more::impl_as_ref!(<T, const N: usize> in Array<T, N> => [T; N]);
+impl_more::impl_from!(<T, const N: usize> in [T; N] => Array<T, N>);
+impl_more::forward_into_iterator!(<T, const N: usize> in Array<T, N> => [T; N]; owned);
+
+let value = Array::from([1, 2, 3]);
+assert_eq!(value.as_ref(), &[1, 2, 3]);
+assert_eq!(value.into_iter().sum::<u32>(), 6);
+```
+
 <!-- cargo-rdme end -->

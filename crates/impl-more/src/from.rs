@@ -1,5 +1,7 @@
 /// Implement [`From`] for a struct.
 ///
+/// Declare type and const parameters before `in`.
+///
 /// # Examples
 /// With a newtype struct:
 /// ```
@@ -21,18 +23,39 @@
 ///
 /// let foo = Foo::from(Rc::new("bar".to_owned()));
 /// ```
+///
+/// With type and const parameters:
+/// ```
+/// struct Array<T, const N: usize>([T; N]);
+/// impl_more::impl_from!(<T, const N: usize> in [T; N] => Array<T, N>);
+///
+/// let value = Array::from([1, 2, 3]);
+/// assert_eq!(value.0, [1, 2, 3]);
+/// ```
 #[macro_export]
 macro_rules! impl_from {
-    (<$($generic:ident),+> in $from:ty => $this:ty $(,)?) => {
-        impl <$($generic),+> ::core::convert::From<$from> for $this {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::impl_from!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse impl_from [] [] const $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse impl_from [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $from:ty => $this:ty $(,)?) => {
+        impl <$($generic)+> ::core::convert::From<$from> for $this {
             fn from(from: $from) -> Self {
                 Self(from)
             }
         }
     };
 
-    (<$($generic:ident),+> in $from:ty => $this:ty : $field:ident $(,)?) => {
-        impl <$($generic),+> ::core::convert::From<$from> for $this {
+    (@impl [$($generic:tt)+] $from:ty => $this:ty : $field:ident $(,)?) => {
+        impl <$($generic)+> ::core::convert::From<$from> for $this {
             fn from(from: $from) -> Self {
                 Self { $field: from }
             }
@@ -115,6 +138,8 @@ macro_rules! impl_newtype_from_into {
 
 /// Implement [`Into`] for a struct.
 ///
+/// Declare type and const parameters before `in`.
+///
 /// # Examples
 /// With a newtype struct:
 /// ```
@@ -141,16 +166,28 @@ macro_rules! impl_newtype_from_into {
 /// ```
 #[macro_export]
 macro_rules! impl_into {
-    (<$($generic:ident),+> in $this:ty => $inner:ty : $field:ident) => {
-        impl <$($generic),+> ::core::convert::Into<$inner> for $this {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::impl_into!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse impl_into [] [] const $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse impl_into [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $inner:ty : $field:ident) => {
+        impl <$($generic)+> ::core::convert::Into<$inner> for $this {
             fn into(self) -> $inner {
                 self.$field
             }
         }
     };
 
-    (<$($generic:ident),+> in $this:ty => $inner:ty) => {
-        impl <$($generic),+> ::core::convert::Into<$inner> for $this {
+    (@impl [$($generic:tt)+] $this:ty => $inner:ty) => {
+        impl <$($generic)+> ::core::convert::Into<$inner> for $this {
             fn into(self) -> $inner {
                 self.0
             }

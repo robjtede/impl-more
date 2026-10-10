@@ -96,6 +96,20 @@
 //! }
 //! impl_more::impl_error_enum!(Err: Io(err) => err);
 //! ```
+//!
+//! Declare type and const parameters before `in`:
+//!
+//! ```
+//! struct Array<T, const N: usize>([T; N]);
+//!
+//! impl_more::impl_as_ref!(<T, const N: usize> in Array<T, N> => [T; N]);
+//! impl_more::impl_from!(<T, const N: usize> in [T; N] => Array<T, N>);
+//! impl_more::forward_into_iterator!(<T, const N: usize> in Array<T, N> => [T; N]; owned);
+//!
+//! let value = Array::from([1, 2, 3]);
+//! assert_eq!(value.as_ref(), &[1, 2, 3]);
+//! assert_eq!(value.into_iter().sum::<u32>(), 6);
+//! ```
 
 #![cfg_attr(not(docsrs), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
@@ -123,6 +137,8 @@ mod enum_from;
 mod from_str;
 #[macro_use]
 mod iter;
+#[macro_use]
+mod generics;
 
 #[cfg(test)]
 mod tests {
