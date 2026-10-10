@@ -1,6 +1,34 @@
 //! Tests for Deref macro syntax and behavior.
 
 #[test]
+fn forward_const_generic_newtype() {
+    struct Array<T, const N: usize>(Box<[T; N]>);
+
+    impl_more::forward_deref_and_mut!(<T, const N: usize> in Array<T, N> => [T; N]);
+
+    let mut value = Array(Box::new([1, 2, 3]));
+    value.reverse();
+
+    assert_eq!(&*value, &[3, 2, 1]);
+}
+
+#[test]
+fn forward_const_generic_named_ref() {
+    struct Array<const N: usize> {
+        items: Box<[u8; N]>,
+    }
+
+    impl_more::forward_deref_and_mut!(<const N: usize,> in Array<N> => items: ref [u8; N]);
+
+    let mut value = Array {
+        items: Box::new([1, 2]),
+    };
+    value.reverse();
+
+    assert_eq!(&*value, &[2, 1]);
+}
+
+#[test]
 fn const_generic_newtype() {
     struct Array<T, const N: usize = 3>([T; N]);
 

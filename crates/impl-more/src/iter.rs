@@ -4,6 +4,8 @@
 /// for `&mut Self`. Each mode uses the inner type's item and iterator types.
 /// Only the selected modes are implemented. Emitted code supports `no_std`.
 ///
+/// Declare type and const parameters before `in`.
+///
 /// # Examples
 ///
 /// ```
@@ -27,25 +29,52 @@
 ///
 /// assert_eq!((&Items { values: vec![1] }).into_iter().next(), Some(&1));
 /// ```
+///
+/// With type and const parameters:
+/// ```
+/// struct Array<T, const N: usize>([T; N]);
+/// impl_more::forward_into_iterator!(
+///     <T, const N: usize> in Array<T, N> => [T; N]; owned, ref, ref_mut
+/// );
+///
+/// assert_eq!(Array([1, 2, 3]).into_iter().sum::<u32>(), 6);
+/// ```
 #[macro_export]
 macro_rules! forward_into_iterator {
-    (<$($generic:ident),+> in $this:ty => $field:tt : $inner:ty; $($mode:ident),+ $(,)?) => {
-        $crate::forward_into_iterator!(@modes [$($generic),+] $this => $field: $inner; $($mode),+);
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::forward_into_iterator!(@impl [$($generic),+] $($rest)+);
     };
-    (<$($generic:ident),+> in $this:ty => $inner:ty; $($mode:ident),+ $(,)?) => {
-        $crate::forward_into_iterator!(@modes [$($generic),+] $this => 0: $inner; $($mode),+);
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_into_iterator [] [] const $($rest)+);
     };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_into_iterator [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $field:tt : $inner:ty; $($mode:ident),+ $(,)?) => {
+        $crate::forward_into_iterator!(@modes [$($generic)+] $this => $field: $inner; $($mode),+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $inner:ty; $($mode:ident),+ $(,)?) => {
+        $crate::forward_into_iterator!(@modes [$($generic)+] $this => 0: $inner; $($mode),+);
+    };
+
     ($this:ty => $field:tt : $inner:ty; $($mode:ident),+ $(,)?) => {
         $crate::forward_into_iterator!(@modes [] $this => $field: $inner; $($mode),+);
     };
+
     ($this:ty => $inner:ty; $($mode:ident),+ $(,)?) => {
         $crate::forward_into_iterator!(@modes [] $this => 0: $inner; $($mode),+);
     };
+
     (@modes $generics:tt $this:ty => $field:tt : $inner:ty; $($mode:ident),+) => {
         $( $crate::forward_into_iterator!(@mode $generics $this => $field: $inner; $mode); )+
     };
-    (@mode [$($generic:ident),*] $this:ty => $field:tt : $inner:ty; owned) => {
-        impl<$($generic),*> ::core::iter::IntoIterator for $this
+
+    (@mode [$($generic:tt)*] $this:ty => $field:tt : $inner:ty; owned) => {
+        impl<$($generic)*> ::core::iter::IntoIterator for $this
         where
             $inner: ::core::iter::IntoIterator,
         {
@@ -57,8 +86,9 @@ macro_rules! forward_into_iterator {
             }
         }
     };
-    (@mode [$($generic:ident),*] $this:ty => $field:tt : $inner:ty; ref) => {
-        impl<'__impl_more_iter, $($generic),*> ::core::iter::IntoIterator for &'__impl_more_iter $this
+
+    (@mode [$($generic:tt)*] $this:ty => $field:tt : $inner:ty; ref) => {
+        impl<'__impl_more_iter, $($generic)*> ::core::iter::IntoIterator for &'__impl_more_iter $this
         where
             $inner: '__impl_more_iter,
             &'__impl_more_iter $inner: ::core::iter::IntoIterator,
@@ -71,8 +101,9 @@ macro_rules! forward_into_iterator {
             }
         }
     };
-    (@mode [$($generic:ident),*] $this:ty => $field:tt : $inner:ty; ref_mut) => {
-        impl<'__impl_more_iter, $($generic),*> ::core::iter::IntoIterator for &'__impl_more_iter mut $this
+
+    (@mode [$($generic:tt)*] $this:ty => $field:tt : $inner:ty; ref_mut) => {
+        impl<'__impl_more_iter, $($generic)*> ::core::iter::IntoIterator for &'__impl_more_iter mut $this
         where
             $inner: '__impl_more_iter,
             &'__impl_more_iter mut $inner: ::core::iter::IntoIterator,
@@ -85,6 +116,7 @@ macro_rules! forward_into_iterator {
             }
         }
     };
+
     (@mode $generics:tt $this:ty => $field:tt : $inner:ty; $mode:ident) => {
         ::core::compile_error!("expected iteration mode `owned`, `ref`, or `ref_mut`");
     };
@@ -95,6 +127,8 @@ macro_rules! forward_into_iterator {
 /// Accept any item type supported by the inner collection's `FromIterator`
 /// implementation. The inner type does not need to implement `IntoIterator`.
 /// Emitted code supports `no_std`.
+///
+/// Declare type and const parameters before `in`.
 ///
 /// # Examples
 ///
@@ -119,20 +153,32 @@ macro_rules! forward_into_iterator {
 /// ```
 #[macro_export]
 macro_rules! forward_from_iterator {
-    (<$($generic:ident),+> in $this:ty => $field:tt : $inner:ty $(,)?) => {
-        $crate::forward_from_iterator!(@impl [$($generic),+] $this => $field: $inner);
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::forward_from_iterator!(@impl [$($generic),+] $($rest)+);
     };
-    (<$($generic:ident),+> in $this:ty => $inner:ty $(,)?) => {
-        $crate::forward_from_iterator!(@impl [$($generic),+] $this => 0: $inner);
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_from_iterator [] [] const $($rest)+);
     };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_from_iterator [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $inner:ty $(,)?) => {
+        $crate::forward_from_iterator!(@impl [$($generic)+] $this => 0: $inner);
+    };
+
     ($this:ty => $field:tt : $inner:ty $(,)?) => {
         $crate::forward_from_iterator!(@impl [] $this => $field: $inner);
     };
+
     ($this:ty => $inner:ty $(,)?) => {
         $crate::forward_from_iterator!(@impl [] $this => 0: $inner);
     };
-    (@impl [$($generic:ident),*] $this:ty => $field:tt : $inner:ty) => {
-        impl<__ImplMoreItem, $($generic),*> ::core::iter::FromIterator<__ImplMoreItem> for $this
+
+    (@impl [$($generic:tt)*] $this:ty => $field:tt : $inner:ty $(,)?) => {
+        impl<__ImplMoreItem, $($generic)*> ::core::iter::FromIterator<__ImplMoreItem> for $this
         where
             $inner: ::core::iter::FromIterator<__ImplMoreItem>,
         {
@@ -147,6 +193,8 @@ macro_rules! forward_from_iterator {
 ///
 /// Accept any item type supported by the inner collection's `Extend`
 /// implementation. Emitted code supports `no_std`.
+///
+/// Declare type and const parameters before `in`.
 ///
 /// # Examples
 ///
@@ -173,20 +221,32 @@ macro_rules! forward_from_iterator {
 /// ```
 #[macro_export]
 macro_rules! forward_extend {
-    (<$($generic:ident),+> in $this:ty => $field:tt : $inner:ty $(,)?) => {
-        $crate::forward_extend!(@impl [$($generic),+] $this => $field: $inner);
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::forward_extend!(@impl [$($generic),+] $($rest)+);
     };
-    (<$($generic:ident),+> in $this:ty => $inner:ty $(,)?) => {
-        $crate::forward_extend!(@impl [$($generic),+] $this => 0: $inner);
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_extend [] [] const $($rest)+);
     };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_extend [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $inner:ty $(,)?) => {
+        $crate::forward_extend!(@impl [$($generic)+] $this => 0: $inner);
+    };
+
     ($this:ty => $field:tt : $inner:ty $(,)?) => {
         $crate::forward_extend!(@impl [] $this => $field: $inner);
     };
+
     ($this:ty => $inner:ty $(,)?) => {
         $crate::forward_extend!(@impl [] $this => 0: $inner);
     };
-    (@impl [$($generic:ident),*] $this:ty => $field:tt : $inner:ty) => {
-        impl<__ImplMoreItem, $($generic),*> ::core::iter::Extend<__ImplMoreItem> for $this
+
+    (@impl [$($generic:tt)*] $this:ty => $field:tt : $inner:ty $(,)?) => {
+        impl<__ImplMoreItem, $($generic)*> ::core::iter::Extend<__ImplMoreItem> for $this
         where
             $inner: ::core::iter::Extend<__ImplMoreItem>,
         {

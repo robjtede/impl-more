@@ -3,6 +3,8 @@
 /// The first argument is that of the struct to create the impl for and the second is the type to
 /// produce a reference for.
 ///
+/// Declare type and const parameters before `in`. The `Foo<T>` form also accepts type parameters.
+///
 /// # Examples
 /// With a newtype struct:
 /// ```
@@ -23,8 +25,47 @@
 /// let foo = Foo { inner: "bar".to_owned() };
 /// assert_eq!(foo.as_ref().as_str(), "bar");
 /// ```
+///
+/// With type and const parameters:
+/// ```
+/// struct Array<T, const N: usize>([T; N]);
+/// impl_more::impl_as_ref!(<T, const N: usize> in Array<T, N> => [T; N]);
+/// impl_more::impl_as_mut!(<T, const N: usize> in Array<T, N> => [T; N]);
+///
+/// let mut value = Array([1, 2, 3]);
+/// value.as_mut().reverse();
+/// assert_eq!(value.as_ref(), &[3, 2, 1]);
+/// ```
 #[macro_export]
 macro_rules! impl_as_ref {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::impl_as_ref!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse impl_as_ref [] [] const $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse impl_as_ref [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $inner:ty) => {
+        impl <$($generic)+> ::core::convert::AsRef<$inner> for $this {
+            fn as_ref(&self) -> &$inner {
+                &self.0
+            }
+        }
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $field:ident : $inner:ty) => {
+        impl <$($generic)+> ::core::convert::AsRef<$inner> for $this {
+            fn as_ref(&self) -> &$inner {
+                &self.$field
+            }
+        }
+    };
+
     ($this:ident $(<$($generic:ident),+>)? => $inner:ty) => {
         impl $(<$($generic),+>)? ::core::convert::AsRef<$inner> for $this $(<$($generic),+>)? {
             fn as_ref(&self) -> &$inner {
@@ -46,6 +87,8 @@ macro_rules! impl_as_ref {
 ///
 /// The first argument is the struct to create the impl for and the second is the target type
 /// produced by the field's [`AsRef`] implementation.
+///
+/// Declare type and const parameters before `in`.
 ///
 /// # Examples
 /// With a newtype struct:
@@ -71,16 +114,28 @@ macro_rules! impl_as_ref {
 /// ```
 #[macro_export]
 macro_rules! forward_as_ref {
-    (<$($generic:ident),+> in $this:ty => $target:ty) => {
-        impl <$($generic),+> ::core::convert::AsRef<$target> for $this {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::forward_as_ref!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_as_ref [] [] const $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_as_ref [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $target:ty) => {
+        impl <$($generic)+> ::core::convert::AsRef<$target> for $this {
             fn as_ref(&self) -> &$target {
                 ::core::convert::AsRef::<$target>::as_ref(&self.0)
             }
         }
     };
 
-    (<$($generic:ident),+> in $this:ty => $field:ident : $target:ty) => {
-        impl <$($generic),+> ::core::convert::AsRef<$target> for $this {
+    (@impl [$($generic:tt)+] $this:ty => $field:ident : $target:ty) => {
+        impl <$($generic)+> ::core::convert::AsRef<$target> for $this {
             fn as_ref(&self) -> &$target {
                 ::core::convert::AsRef::<$target>::as_ref(&self.$field)
             }
@@ -108,6 +163,8 @@ macro_rules! forward_as_ref {
 ///
 /// The first argument is that of the struct to create the impl for and the second is the type to
 /// produce a reference for.
+///
+/// Declare type and const parameters before `in`. The `Foo<T>` form also accepts type parameters.
 ///
 /// # Examples
 /// With a newtype struct:
@@ -141,6 +198,34 @@ macro_rules! forward_as_ref {
 /// ```
 #[macro_export]
 macro_rules! impl_as_mut {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::impl_as_mut!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse impl_as_mut [] [] const $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse impl_as_mut [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $inner:ty) => {
+        impl <$($generic)+> ::core::convert::AsMut<$inner> for $this {
+            fn as_mut(&mut self) -> &mut $inner {
+                &mut self.0
+            }
+        }
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $field:ident : $inner:ty) => {
+        impl <$($generic)+> ::core::convert::AsMut<$inner> for $this {
+            fn as_mut(&mut self) -> &mut $inner {
+                &mut self.$field
+            }
+        }
+    };
+
     ($this:ident $(<$($generic:ident),+>)? => $inner:ty) => {
         impl $(<$($generic),+>)? ::core::convert::AsMut<$inner> for $this $(<$($generic),+>)? {
             fn as_mut(&mut self) -> &mut $inner {
@@ -162,6 +247,8 @@ macro_rules! impl_as_mut {
 ///
 /// The first argument is the struct to create the impl for and the second is the target type
 /// produced by the field's [`AsMut`] implementation.
+///
+/// Declare type and const parameters before `in`.
 ///
 /// # Examples
 /// With a newtype struct:
@@ -191,16 +278,28 @@ macro_rules! impl_as_mut {
 /// ```
 #[macro_export]
 macro_rules! forward_as_mut {
-    (<$($generic:ident),+> in $this:ty => $target:ty) => {
-        impl <$($generic),+> ::core::convert::AsMut<$target> for $this {
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::forward_as_mut!(@impl [$($generic),+] $($rest)+);
+    };
+
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_as_mut [] [] const $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_as_mut [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $target:ty) => {
+        impl <$($generic)+> ::core::convert::AsMut<$target> for $this {
             fn as_mut(&mut self) -> &mut $target {
                 ::core::convert::AsMut::<$target>::as_mut(&mut self.0)
             }
         }
     };
 
-    (<$($generic:ident),+> in $this:ty => $field:ident : $target:ty) => {
-        impl <$($generic),+> ::core::convert::AsMut<$target> for $this {
+    (@impl [$($generic:tt)+] $this:ty => $field:ident : $target:ty) => {
+        impl <$($generic)+> ::core::convert::AsMut<$target> for $this {
             fn as_mut(&mut self) -> &mut $target {
                 ::core::convert::AsMut::<$target>::as_mut(&mut self.$field)
             }
@@ -226,7 +325,9 @@ macro_rules! forward_as_mut {
 
 /// Implement [`AsRef`] and [`AsMut`] by forwarding to a field's implementations.
 ///
-/// This macro has the same type parameter support and format as [`forward_as_ref`].
+/// This macro has the same type and const parameter support and format as [`forward_as_ref`].
+///
+/// Declare type and const parameters before `in`.
 ///
 /// # Examples
 /// ```
@@ -242,16 +343,38 @@ macro_rules! forward_as_mut {
 /// ```
 ///
 /// [`forward_as_ref`]: crate::forward_as_ref
+///
+/// With type and const parameters:
+/// ```
+/// struct Array<T, const N: usize>([T; N]);
+/// impl_more::forward_as_ref_and_mut!(<T, const N: usize> in Array<T, N> => [T]);
+///
+/// let mut value = Array([1, 2, 3]);
+/// value.as_mut().reverse();
+/// assert_eq!(value.as_ref(), &[3, 2, 1]);
+/// ```
 #[macro_export]
 macro_rules! forward_as_ref_and_mut {
-    (<$($generic:ident),+> in $this:ty => $target:ty) => {
-        $crate::forward_as_ref!(<$($generic),+> in $this => $target);
-        $crate::forward_as_mut!(<$($generic),+> in $this => $target);
+    (<$($generic:ident),+> in $($rest:tt)+) => {
+        $crate::forward_as_ref_and_mut!(@impl [$($generic),+] $($rest)+);
     };
 
-    (<$($generic:ident),+> in $this:ty => $field:ident : $target:ty) => {
-        $crate::forward_as_ref!(<$($generic),+> in $this => $field: $target);
-        $crate::forward_as_mut!(<$($generic),+> in $this => $field: $target);
+    (<const $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_as_ref_and_mut [] [] const $($rest)+);
+    };
+
+    (<$generic:ident, $($rest:tt)+) => {
+        $crate::__impl_more_parse_generics!(@parse forward_as_ref_and_mut [] [] $generic, $($rest)+);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $target:ty) => {
+        $crate::forward_as_ref!(@impl [$($generic)+] $this => $target);
+        $crate::forward_as_mut!(@impl [$($generic)+] $this => $target);
+    };
+
+    (@impl [$($generic:tt)+] $this:ty => $field:ident : $target:ty) => {
+        $crate::forward_as_ref!(@impl [$($generic)+] $this => $field: $target);
+        $crate::forward_as_mut!(@impl [$($generic)+] $this => $field: $target);
     };
 
     ($this:ty => $target:ty) => {
