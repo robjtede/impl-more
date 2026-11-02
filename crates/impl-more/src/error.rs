@@ -136,8 +136,10 @@ macro_rules! impl_error_enum {
 /// #[derive(Debug)]
 /// struct LeafError;
 ///
-/// impl_more::impl_display!(LeafError; "leaf");
-/// impl_more::impl_error_enum!(LeafError);
+/// impl_more::impl_display!(LeafError: "leaf");
+/// impl_more::impl_leaf_error!(LeafError);
+///
+/// assert!(core::error::Error::source(&LeafError).is_none());
 /// ```
 ///
 /// [`Error`]: core::error::Error
