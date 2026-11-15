@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.3.11
+
+- No significant changes since `0.3.10`.
+
 ## 0.3.10
 
 - Add const generic parameter support to `impl_as_ref!`, `impl_as_mut!`, `forward_as_ref!`, `forward_as_mut!`, `forward_as_ref_and_mut!`, `impl_from!`, `impl_into!`, `impl_enum_from!`, `forward_into_iterator!`, `forward_from_iterator!`, `forward_extend!`, `forward_debug!`, and `forward_deref_and_mut!`.
